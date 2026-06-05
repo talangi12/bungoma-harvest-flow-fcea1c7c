@@ -14,16 +14,227 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appraisals: {
+        Row: {
+          created_at: string
+          employee_comments: string | null
+          employee_id: string
+          employee_signed_at: string | null
+          id: string
+          period: string
+          rating: string | null
+          recommendation: string | null
+          status: string
+          supervisor_comments: string | null
+          supervisor_signed_at: string | null
+          total_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          employee_comments?: string | null
+          employee_id: string
+          employee_signed_at?: string | null
+          id?: string
+          period: string
+          rating?: string | null
+          recommendation?: string | null
+          status?: string
+          supervisor_comments?: string | null
+          supervisor_signed_at?: string | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          employee_comments?: string | null
+          employee_id?: string
+          employee_signed_at?: string | null
+          id?: string
+          period?: string
+          rating?: string | null
+          recommendation?: string | null
+          status?: string
+          supervisor_comments?: string | null
+          supervisor_signed_at?: string | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appraisals_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          department: string | null
+          designation: string | null
+          directorate: string | null
+          email: string | null
+          employee_no: string | null
+          employment_date: string | null
+          employment_status: string | null
+          full_name: string
+          id: string
+          job_group: string | null
+          national_id: string | null
+          phone: string | null
+          photo_url: string | null
+          supervisor_id: string | null
+          updated_at: string
+          work_station: string | null
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          designation?: string | null
+          directorate?: string | null
+          email?: string | null
+          employee_no?: string | null
+          employment_date?: string | null
+          employment_status?: string | null
+          full_name: string
+          id: string
+          job_group?: string | null
+          national_id?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          supervisor_id?: string | null
+          updated_at?: string
+          work_station?: string | null
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          designation?: string | null
+          directorate?: string | null
+          email?: string | null
+          employee_no?: string | null
+          employment_date?: string | null
+          employment_status?: string | null
+          full_name?: string
+          id?: string
+          job_group?: string | null
+          national_id?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          supervisor_id?: string | null
+          updated_at?: string
+          work_station?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      targets: {
+        Row: {
+          achieved_result: string | null
+          appraisal_id: string
+          created_at: string
+          evidence_url: string | null
+          expected_outcome: string | null
+          id: string
+          indicator: string | null
+          score: number | null
+          sort_order: number
+          target: string
+          weight: number
+        }
+        Insert: {
+          achieved_result?: string | null
+          appraisal_id: string
+          created_at?: string
+          evidence_url?: string | null
+          expected_outcome?: string | null
+          id?: string
+          indicator?: string | null
+          score?: number | null
+          sort_order?: number
+          target: string
+          weight?: number
+        }
+        Update: {
+          achieved_result?: string | null
+          appraisal_id?: string
+          created_at?: string
+          evidence_url?: string | null
+          expected_outcome?: string | null
+          id?: string
+          indicator?: string | null
+          score?: number | null
+          sort_order?: number
+          target?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "targets_appraisal_id_fkey"
+            columns: ["appraisal_id"]
+            isOneToOne: false
+            referencedRelation: "appraisals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      classify_rating: { Args: { pct: number }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "employee"
+        | "supervisor"
+        | "department_head"
+        | "hr_officer"
+        | "cpmc"
+        | "board"
+        | "chief_officer"
+        | "county_administrator"
+        | "admin"
+        | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +361,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "employee",
+        "supervisor",
+        "department_head",
+        "hr_officer",
+        "cpmc",
+        "board",
+        "chief_officer",
+        "county_administrator",
+        "admin",
+        "super_admin",
+      ],
+    },
   },
 } as const
