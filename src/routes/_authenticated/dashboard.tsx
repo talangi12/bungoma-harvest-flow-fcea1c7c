@@ -16,15 +16,17 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user } = Route.useRouteContext();
+  const { data: roles } = useRoles(user.id);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", user.id],
     queryFn: async () => {
-      const [{ data: profile }, { data: appraisals }] = await Promise.all([
+      const [{ data: profile }, { data: appraisals }, supInbox] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("appraisals").select("*, targets(weight, score)").eq("employee_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("appraisals").select("id, status").eq("chosen_supervisor_id", user.id).eq("status", "submitted"),
       ]);
-      return { profile, appraisals: appraisals ?? [] };
+      return { profile, appraisals: appraisals ?? [], pendingReviews: supInbox.data?.length ?? 0 };
     },
   });
 
@@ -37,9 +39,15 @@ function Dashboard() {
   const livePct = totalWeight > 0 ? weightedScore / totalWeight : null;
   const liveRating = classify(livePct);
 
+  const isSupervisor = hasAnyRole(roles, ["supervisor"]);
+  const isAdmin = hasAnyRole(roles, ["system_admin", "super_admin"]);
+  const primaryRole = roles?.[0] ?? "employee";
+
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader authenticated />
+      <AppHeader authenticated userId={user.id} />
+
+
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Welcome */}
