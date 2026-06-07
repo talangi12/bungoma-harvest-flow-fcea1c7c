@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       appraisals: {
         Row: {
+          chosen_supervisor_id: string | null
           created_at: string
           employee_comments: string | null
           employee_id: string
@@ -24,13 +25,16 @@ export type Database = {
           period: string
           rating: string | null
           recommendation: string | null
+          rejection_reason: string | null
           status: string
           supervisor_comments: string | null
+          supervisor_reviewed_at: string | null
           supervisor_signed_at: string | null
           total_score: number | null
           updated_at: string
         }
         Insert: {
+          chosen_supervisor_id?: string | null
           created_at?: string
           employee_comments?: string | null
           employee_id: string
@@ -39,13 +43,16 @@ export type Database = {
           period: string
           rating?: string | null
           recommendation?: string | null
+          rejection_reason?: string | null
           status?: string
           supervisor_comments?: string | null
+          supervisor_reviewed_at?: string | null
           supervisor_signed_at?: string | null
           total_score?: number | null
           updated_at?: string
         }
         Update: {
+          chosen_supervisor_id?: string | null
           created_at?: string
           employee_comments?: string | null
           employee_id?: string
@@ -54,8 +61,10 @@ export type Database = {
           period?: string
           rating?: string | null
           recommendation?: string | null
+          rejection_reason?: string | null
           status?: string
           supervisor_comments?: string | null
+          supervisor_reviewed_at?: string | null
           supervisor_signed_at?: string | null
           total_score?: number | null
           updated_at?: string
@@ -69,6 +78,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          related_appraisal_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          related_appraisal_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          related_appraisal_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -149,6 +194,7 @@ export type Database = {
           indicator: string | null
           score: number | null
           sort_order: number
+          supervisor_review: string | null
           target: string
           weight: number
         }
@@ -162,6 +208,7 @@ export type Database = {
           indicator?: string | null
           score?: number | null
           sort_order?: number
+          supervisor_review?: string | null
           target: string
           weight?: number
         }
@@ -175,6 +222,7 @@ export type Database = {
           indicator?: string | null
           score?: number | null
           sort_order?: number
+          supervisor_review?: string | null
           target?: string
           weight?: number
         }
@@ -221,6 +269,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      is_admin_viewer: { Args: { _uid: string }; Returns: boolean }
+      list_supervisors: {
+        Args: never
+        Returns: {
+          department: string
+          designation: string
+          full_name: string
+          id: string
+        }[]
       }
     }
     Enums: {
