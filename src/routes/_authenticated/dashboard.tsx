@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RatingBadge, classify } from "@/components/RatingBadge";
-import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap } from "lucide-react";
+import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap, Inbox, ShieldCheck, UserCog } from "lucide-react";
+import { useRoles, hasAnyRole, ROLE_LABELS, ROLE_RESPONSIBILITIES } from "@/hooks/useRoles";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Bungoma EPMS" }] }),
@@ -15,15 +16,17 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user } = Route.useRouteContext();
+  const { data: roles } = useRoles(user.id);
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", user.id],
     queryFn: async () => {
-      const [{ data: profile }, { data: appraisals }] = await Promise.all([
+      const [{ data: profile }, { data: appraisals }, supInbox] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("appraisals").select("*, targets(weight, score)").eq("employee_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("appraisals").select("id, status").eq("chosen_supervisor_id", user.id).eq("status", "submitted"),
       ]);
-      return { profile, appraisals: appraisals ?? [] };
+      return { profile, appraisals: appraisals ?? [], pendingReviews: supInbox.data?.length ?? 0 };
     },
   });
 
@@ -36,15 +39,21 @@ function Dashboard() {
   const livePct = totalWeight > 0 ? weightedScore / totalWeight : null;
   const liveRating = classify(livePct);
 
+  const isSupervisor = hasAnyRole(roles, ["supervisor"]);
+  const isAdmin = hasAnyRole(roles, ["system_admin", "super_admin"]);
+  const primaryRole = roles?.[0] ?? "employee";
+
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader authenticated />
+      <AppHeader authenticated userId={user.id} />
+
+
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Welcome */}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-widest text-primary">Employee dashboard</div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-primary">{ROLE_LABELS[primaryRole]} workspace</div>
             <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">
               Karibu, <span className="text-primary">{data?.profile?.full_name?.split(" ")[0] ?? "Officer"}</span>.
             </h1>
@@ -58,6 +67,34 @@ function Dashboard() {
             </Button>
           </Link>
         </div>
+
+        {/* Role responsibilities + quick links */}
+        <Card className="mt-6 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <div className="text-xs font-semibold uppercase tracking-wider text-primary">Your responsibilities</div>
+              <p className="mt-1 text-sm">{ROLE_RESPONSIBILITIES[primaryRole]}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {isSupervisor && (
+                <Link to="/supervisor/inbox" className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10">
+                  <Inbox className="h-3.5 w-3.5" /> Review Inbox{data?.pendingReviews ? ` (${data.pendingReviews})` : ""}
+                </Link>
+              )}
+              {isAdmin && (
+                <Link to="/admin/roles" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                  <UserCog className="h-3.5 w-3.5" /> Manage roles
+                </Link>
+              )}
+              {hasAnyRole(roles, ["hr", "super_admin"]) && (
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5" /> HR oversight enabled
+                </span>
+              )}
+            </div>
+          </div>
+        </Card>
+
 
         {/* Stat cards */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
