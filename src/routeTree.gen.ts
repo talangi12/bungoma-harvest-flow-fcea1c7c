@@ -14,6 +14,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppraisalRouteImport } from './routes/_authenticated/appraisal'
+import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_authenticated/supervisor.inbox'
+import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
+import { Route as AuthenticatedSupervisorReviewIdRouteImport } from './routes/_authenticated/supervisor.review.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -39,18 +42,41 @@ const AuthenticatedAppraisalRoute = AuthenticatedAppraisalRouteImport.update({
   path: '/appraisal',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSupervisorInboxRoute =
+  AuthenticatedSupervisorInboxRouteImport.update({
+    id: '/supervisor/inbox',
+    path: '/supervisor/inbox',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
+  id: '/admin/roles',
+  path: '/admin/roles',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSupervisorReviewIdRoute =
+  AuthenticatedSupervisorReviewIdRouteImport.update({
+    id: '/supervisor/review/$id',
+    path: '/supervisor/review/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +85,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/appraisal': typeof AuthenticatedAppraisalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/_authenticated/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/_authenticated/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/appraisal' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/appraisal'
+    | '/dashboard'
+    | '/admin/roles'
+    | '/supervisor/inbox'
+    | '/supervisor/review/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/appraisal' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/appraisal'
+    | '/dashboard'
+    | '/admin/roles'
+    | '/supervisor/inbox'
+    | '/supervisor/review/$id'
   id:
     | '__root__'
     | '/'
@@ -72,6 +115,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/appraisal'
     | '/_authenticated/dashboard'
+    | '/_authenticated/admin/roles'
+    | '/_authenticated/supervisor/inbox'
+    | '/_authenticated/supervisor/review/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +163,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppraisalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/supervisor/inbox': {
+      id: '/_authenticated/supervisor/inbox'
+      path: '/supervisor/inbox'
+      fullPath: '/supervisor/inbox'
+      preLoaderRoute: typeof AuthenticatedSupervisorInboxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/roles': {
+      id: '/_authenticated/admin/roles'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AuthenticatedAdminRolesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/supervisor/review/$id': {
+      id: '/_authenticated/supervisor/review/$id'
+      path: '/supervisor/review/$id'
+      fullPath: '/supervisor/review/$id'
+      preLoaderRoute: typeof AuthenticatedSupervisorReviewIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppraisalRoute: typeof AuthenticatedAppraisalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
+  AuthenticatedSupervisorInboxRoute: typeof AuthenticatedSupervisorInboxRoute
+  AuthenticatedSupervisorReviewIdRoute: typeof AuthenticatedSupervisorReviewIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppraisalRoute: AuthenticatedAppraisalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
+  AuthenticatedSupervisorInboxRoute: AuthenticatedSupervisorInboxRoute,
+  AuthenticatedSupervisorReviewIdRoute: AuthenticatedSupervisorReviewIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -141,3 +214,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
