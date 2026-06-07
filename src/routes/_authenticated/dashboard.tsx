@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RatingBadge, classify } from "@/components/RatingBadge";
-import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap } from "lucide-react";
+import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap, Inbox, ShieldCheck, UserCog } from "lucide-react";
+import { useRoles, hasAnyRole, ROLE_LABELS, ROLE_RESPONSIBILITIES } from "@/hooks/useRoles";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Bungoma EPMS" }] }),
