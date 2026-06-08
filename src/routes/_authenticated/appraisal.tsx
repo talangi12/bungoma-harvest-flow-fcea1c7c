@@ -382,6 +382,43 @@ function AppraisalPage() {
   );
 }
 
+function PdfActions({ appraisalId }: { appraisalId: string | null }) {
+  const gen = useServerFn(generateAppraisalPdf);
+  const get = useServerFn(getAppraisalPdfUrl);
+  const [busy, setBusy] = useState(false);
+  if (!appraisalId) return null;
+  async function open(regen: boolean) {
+    if (!appraisalId) return;
+    setBusy(true);
+    try {
+      const res = regen
+        ? await gen({ data: { appraisalId } })
+        : await get({ data: { appraisalId } });
+      let url = res.url;
+      if (!url) {
+        const fresh = await gen({ data: { appraisalId } });
+        url = fresh.url;
+      }
+      if (url) window.open(url, "_blank");
+      else toast.error("Could not open PDF");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "PDF failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={() => open(false)} disabled={busy}>
+        <FileDown className="mr-1.5 h-3.5 w-3.5" /> Download PDF
+      </Button>
+      <Button size="sm" variant="ghost" onClick={() => open(true)} disabled={busy}>
+        Regenerate
+      </Button>
+    </div>
+  );
+}
+
 function SectionHeader({ number, title }: { number: string; title: string }) {
   return (
     <div className="flex items-center gap-3">
