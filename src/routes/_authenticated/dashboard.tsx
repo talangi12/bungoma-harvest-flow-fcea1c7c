@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RatingBadge, classify } from "@/components/RatingBadge";
-import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap, Inbox, ShieldCheck, UserCog } from "lucide-react";
+import { ArrowRight, CalendarClock, ClipboardCheck, FileText, Target, TrendingUp, GraduationCap, Inbox, ShieldCheck, UserCog, Gavel, UserPlus } from "lucide-react";
 import { useRoles, hasAnyRole, ROLE_LABELS, ROLE_RESPONSIBILITIES } from "@/hooks/useRoles";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -81,10 +81,26 @@ function Dashboard() {
                   <Inbox className="h-3.5 w-3.5" /> Review Inbox{data?.pendingReviews ? ` (${data.pendingReviews})` : ""}
                 </Link>
               )}
-              {isAdmin && (
-                <Link to="/admin/roles" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
-                  <UserCog className="h-3.5 w-3.5" /> Manage roles
+              <Link to="/midyear" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                <CalendarClock className="h-3.5 w-3.5" /> Mid-Year Review
+              </Link>
+              <Link to="/appeals" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                <Gavel className="h-3.5 w-3.5" /> Appeals
+              </Link>
+              {hasAnyRole(roles, ["appeals_committee", "super_admin"]) && (
+                <Link to="/committee/appeals" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                  <Gavel className="h-3.5 w-3.5" /> Committee
                 </Link>
+              )}
+              {isAdmin && (
+                <>
+                  <Link to="/admin/roles" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                    <UserCog className="h-3.5 w-3.5" /> Manage roles
+                  </Link>
+                  <Link to="/admin/users" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium hover:bg-muted">
+                    <UserPlus className="h-3.5 w-3.5" /> Create user
+                  </Link>
+                </>
               )}
               {hasAnyRole(roles, ["hr", "super_admin"]) && (
                 <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground">
