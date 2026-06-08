@@ -11,7 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
-import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { generateAppraisalPdf, getAppraisalPdfUrl } from "@/lib/pdf.functions";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/appraisal")({
   head: () => ({ meta: [{ title: "My Appraisal — Bungoma EPMS" }] }),
@@ -208,14 +211,22 @@ function AppraisalPage() {
         )}
         {status === "approved" && (
           <div className="mt-6 rounded-lg border border-primary/40 bg-primary/5 p-4">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-              <div>
-                <div className="font-semibold text-primary">Approved by your supervisor</div>
-                {supervisorComments && <p className="mt-1 text-sm">{supervisorComments}</p>}
-                {supervisorReviewedAt && <p className="mt-1 text-xs text-muted-foreground">on {new Date(supervisorReviewedAt).toLocaleString()}</p>}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                <div>
+                  <div className="font-semibold text-primary">Approved by your supervisor</div>
+                  {supervisorComments && <p className="mt-1 text-sm">{supervisorComments}</p>}
+                  {supervisorReviewedAt && <p className="mt-1 text-xs text-muted-foreground">on {new Date(supervisorReviewedAt).toLocaleString()}</p>}
+                </div>
               </div>
+              <PdfActions appraisalId={appraisalId} />
             </div>
+          </div>
+        )}
+        {status === "rejected" && (
+          <div className="mt-3 text-xs">
+            <Link to="/appeals" className="inline-flex items-center gap-1 text-primary underline"><Gavel className="h-3 w-3" /> File an appeal</Link>
           </div>
         )}
         {status === "submitted" && (
@@ -367,6 +378,43 @@ function AppraisalPage() {
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+function PdfActions({ appraisalId }: { appraisalId: string | null }) {
+  const gen = useServerFn(generateAppraisalPdf);
+  const get = useServerFn(getAppraisalPdfUrl);
+  const [busy, setBusy] = useState(false);
+  if (!appraisalId) return null;
+  async function open(regen: boolean) {
+    if (!appraisalId) return;
+    setBusy(true);
+    try {
+      const res = regen
+        ? await gen({ data: { appraisalId } })
+        : await get({ data: { appraisalId } });
+      let url = res.url;
+      if (!url) {
+        const fresh = await gen({ data: { appraisalId } });
+        url = fresh.url;
+      }
+      if (url) window.open(url, "_blank");
+      else toast.error("Could not open PDF");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "PDF failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={() => open(false)} disabled={busy}>
+        <FileDown className="mr-1.5 h-3.5 w-3.5" /> Download PDF
+      </Button>
+      <Button size="sm" variant="ghost" onClick={() => open(true)} disabled={busy}>
+        Regenerate
+      </Button>
     </div>
   );
 }

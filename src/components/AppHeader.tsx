@@ -43,7 +43,18 @@ export function AppHeader({ authenticated = false, userId }: { authenticated?: b
               </Link>
               {hasAnyRole(roles, ["supervisor"]) && (
                 <Link to="/supervisor/inbox" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted sm:inline-block" activeProps={{ className: "bg-muted" }}>
-                  Review Inbox
+                  Inbox
+                </Link>
+              )}
+              <Link to="/midyear" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                Mid-Year
+              </Link>
+              <Link to="/appeals" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                Appeals
+              </Link>
+              {hasAnyRole(roles, ["appeals_committee", "super_admin"]) && (
+                <Link to="/committee/appeals" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                  Committee
                 </Link>
               )}
               {hasAnyRole(roles, ["system_admin", "super_admin"]) && (

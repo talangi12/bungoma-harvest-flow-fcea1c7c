@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      appeals: {
+        Row: {
+          appellant_id: string
+          appraisal_id: string
+          committee_comments: string | null
+          created_at: string
+          desired_outcome: string | null
+          grounds: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          ruling: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appellant_id: string
+          appraisal_id: string
+          committee_comments?: string | null
+          created_at?: string
+          desired_outcome?: string | null
+          grounds: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          ruling?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appellant_id?: string
+          appraisal_id?: string
+          committee_comments?: string | null
+          created_at?: string
+          desired_outcome?: string | null
+          grounds?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          ruling?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appraisals: {
         Row: {
           chosen_supervisor_id: string | null
@@ -21,7 +66,12 @@ export type Database = {
           employee_comments: string | null
           employee_id: string
           employee_signed_at: string | null
+          fy_start: string | null
           id: string
+          midyear_completed_at: string | null
+          midyear_unlocked_at: string | null
+          pdf_generated_at: string | null
+          pdf_path: string | null
           period: string
           rating: string | null
           recommendation: string | null
@@ -39,7 +89,12 @@ export type Database = {
           employee_comments?: string | null
           employee_id: string
           employee_signed_at?: string | null
+          fy_start?: string | null
           id?: string
+          midyear_completed_at?: string | null
+          midyear_unlocked_at?: string | null
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
           period: string
           rating?: string | null
           recommendation?: string | null
@@ -57,7 +112,12 @@ export type Database = {
           employee_comments?: string | null
           employee_id?: string
           employee_signed_at?: string | null
+          fy_start?: string | null
           id?: string
+          midyear_completed_at?: string | null
+          midyear_unlocked_at?: string | null
+          pdf_generated_at?: string | null
+          pdf_path?: string | null
           period?: string
           rating?: string | null
           recommendation?: string | null
@@ -192,6 +252,9 @@ export type Database = {
           expected_outcome: string | null
           id: string
           indicator: string | null
+          midyear_progress: string | null
+          midyear_score: number | null
+          midyear_supervisor_comment: string | null
           score: number | null
           sort_order: number
           supervisor_review: string | null
@@ -206,6 +269,9 @@ export type Database = {
           expected_outcome?: string | null
           id?: string
           indicator?: string | null
+          midyear_progress?: string | null
+          midyear_score?: number | null
+          midyear_supervisor_comment?: string | null
           score?: number | null
           sort_order?: number
           supervisor_review?: string | null
@@ -220,6 +286,9 @@ export type Database = {
           expected_outcome?: string | null
           id?: string
           indicator?: string | null
+          midyear_progress?: string | null
+          midyear_score?: number | null
+          midyear_supervisor_comment?: string | null
           score?: number | null
           sort_order?: number
           supervisor_review?: string | null
@@ -280,6 +349,7 @@ export type Database = {
           id: string
         }[]
       }
+      midyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:
