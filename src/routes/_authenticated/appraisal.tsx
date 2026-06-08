@@ -211,14 +211,22 @@ function AppraisalPage() {
         )}
         {status === "approved" && (
           <div className="mt-6 rounded-lg border border-primary/40 bg-primary/5 p-4">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-              <div>
-                <div className="font-semibold text-primary">Approved by your supervisor</div>
-                {supervisorComments && <p className="mt-1 text-sm">{supervisorComments}</p>}
-                {supervisorReviewedAt && <p className="mt-1 text-xs text-muted-foreground">on {new Date(supervisorReviewedAt).toLocaleString()}</p>}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                <div>
+                  <div className="font-semibold text-primary">Approved by your supervisor</div>
+                  {supervisorComments && <p className="mt-1 text-sm">{supervisorComments}</p>}
+                  {supervisorReviewedAt && <p className="mt-1 text-xs text-muted-foreground">on {new Date(supervisorReviewedAt).toLocaleString()}</p>}
+                </div>
               </div>
+              <PdfActions appraisalId={appraisalId} />
             </div>
+          </div>
+        )}
+        {status === "rejected" && (
+          <div className="mt-3 text-xs">
+            <Link to="/appeals" className="inline-flex items-center gap-1 text-primary underline"><Gavel className="h-3 w-3" /> File an appeal</Link>
           </div>
         )}
         {status === "submitted" && (
