@@ -81,7 +81,11 @@ function MidYearPage() {
   async function save() {
     try {
       for (const r of rows) {
-        const patch: Record<string, unknown> = {};
+        const patch: {
+          midyear_progress?: string;
+          midyear_score?: number | null;
+          midyear_supervisor_comment?: string;
+        } = {};
         if (isMyAppraisal) {
           patch.midyear_progress = r.midyear_progress;
           patch.midyear_score = r.midyear_score;
