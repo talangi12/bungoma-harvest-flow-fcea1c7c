@@ -516,3 +516,34 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
+
+function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
+  label: string;
+  slot: keyof CycleSignoffs;
+  signoffs: CycleSignoffs;
+  onSign: (slot: keyof CycleSignoffs, name: string) => void;
+  disabled?: boolean;
+  fixedName?: string;
+}) {
+  const [name, setName] = useState(fixedName ?? "");
+  const sig = signoffs[slot];
+  return (
+    <div className="rounded-lg border border-dashed border-border p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      {sig?.signed_at ? (
+        <div className="mt-1.5">
+          <div className="font-display text-sm font-bold italic text-primary">{sig.name}</div>
+          <div className="text-[10px] text-muted-foreground">Signed {new Date(sig.signed_at).toLocaleDateString()}</div>
+        </div>
+      ) : (
+        <div className="mt-1.5 space-y-1.5">
+          <Input className="h-8 text-xs" placeholder="Name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
+          <Button size="sm" variant="outline" className="h-7 w-full text-xs" disabled={disabled} onClick={() => onSign(slot, name)}>
+            <FileSignature className="mr-1 h-3 w-3" /> Sign
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
