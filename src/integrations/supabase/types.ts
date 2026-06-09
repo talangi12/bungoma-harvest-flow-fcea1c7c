@@ -21,6 +21,7 @@ export type Database = {
           committee_comments: string | null
           created_at: string
           desired_outcome: string | null
+          evidence_paths: string[]
           grounds: string
           id: string
           reviewed_at: string | null
@@ -35,6 +36,7 @@ export type Database = {
           committee_comments?: string | null
           created_at?: string
           desired_outcome?: string | null
+          evidence_paths?: string[]
           grounds: string
           id?: string
           reviewed_at?: string | null
@@ -49,6 +51,7 @@ export type Database = {
           committee_comments?: string | null
           created_at?: string
           desired_outcome?: string | null
+          evidence_paths?: string[]
           grounds?: string
           id?: string
           reviewed_at?: string | null
@@ -63,9 +66,12 @@ export type Database = {
         Row: {
           chosen_supervisor_id: string | null
           created_at: string
+          cycle_signoffs: Json
           employee_comments: string | null
           employee_id: string
           employee_signed_at: string | null
+          endyear_completed_at: string | null
+          endyear_unlocked_at: string | null
           fy_start: string | null
           id: string
           midyear_completed_at: string | null
@@ -76,6 +82,8 @@ export type Database = {
           rating: string | null
           recommendation: string | null
           rejection_reason: string | null
+          self_commitments: string | null
+          self_overall_comment: string | null
           status: string
           supervisor_comments: string | null
           supervisor_reviewed_at: string | null
@@ -86,9 +94,12 @@ export type Database = {
         Insert: {
           chosen_supervisor_id?: string | null
           created_at?: string
+          cycle_signoffs?: Json
           employee_comments?: string | null
           employee_id: string
           employee_signed_at?: string | null
+          endyear_completed_at?: string | null
+          endyear_unlocked_at?: string | null
           fy_start?: string | null
           id?: string
           midyear_completed_at?: string | null
@@ -99,6 +110,8 @@ export type Database = {
           rating?: string | null
           recommendation?: string | null
           rejection_reason?: string | null
+          self_commitments?: string | null
+          self_overall_comment?: string | null
           status?: string
           supervisor_comments?: string | null
           supervisor_reviewed_at?: string | null
@@ -109,9 +122,12 @@ export type Database = {
         Update: {
           chosen_supervisor_id?: string | null
           created_at?: string
+          cycle_signoffs?: Json
           employee_comments?: string | null
           employee_id?: string
           employee_signed_at?: string | null
+          endyear_completed_at?: string | null
+          endyear_unlocked_at?: string | null
           fy_start?: string | null
           id?: string
           midyear_completed_at?: string | null
@@ -122,6 +138,8 @@ export type Database = {
           rating?: string | null
           recommendation?: string | null
           rejection_reason?: string | null
+          self_commitments?: string | null
+          self_overall_comment?: string | null
           status?: string
           supervisor_comments?: string | null
           supervisor_reviewed_at?: string | null
@@ -248,6 +266,11 @@ export type Database = {
           achieved_result: string | null
           appraisal_id: string
           created_at: string
+          endyear_actual: string | null
+          endyear_self_comment: string | null
+          endyear_self_score: number | null
+          endyear_supervisor_comment: string | null
+          endyear_supervisor_score: number | null
           evidence_url: string | null
           expected_outcome: string | null
           id: string
@@ -265,6 +288,11 @@ export type Database = {
           achieved_result?: string | null
           appraisal_id: string
           created_at?: string
+          endyear_actual?: string | null
+          endyear_self_comment?: string | null
+          endyear_self_score?: number | null
+          endyear_supervisor_comment?: string | null
+          endyear_supervisor_score?: number | null
           evidence_url?: string | null
           expected_outcome?: string | null
           id?: string
@@ -282,6 +310,11 @@ export type Database = {
           achieved_result?: string | null
           appraisal_id?: string
           created_at?: string
+          endyear_actual?: string | null
+          endyear_self_comment?: string | null
+          endyear_self_score?: number | null
+          endyear_supervisor_comment?: string | null
+          endyear_supervisor_score?: number | null
           evidence_url?: string | null
           expected_outcome?: string | null
           id?: string
@@ -332,6 +365,7 @@ export type Database = {
     }
     Functions: {
       classify_rating: { Args: { pct: number }; Returns: string }
+      endyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
