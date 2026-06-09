@@ -171,6 +171,8 @@ function AppraisalPage() {
         rating: totals.rating,
         chosen_supervisor_id: supervisorId || null,
         rejection_reason: submit ? null : rejectionReason,
+        self_commitments: selfCommitments || null,
+        cycle_signoffs: signoffs as never,
       }).eq("id", id);
 
       setStatus(newStatus);
@@ -188,10 +190,24 @@ function AppraisalPage() {
   async function signEmployee() {
     const id = await ensureAppraisal();
     const ts = new Date().toISOString();
-    await supabase.from("appraisals").update({ employee_signed_at: ts }).eq("id", id);
+    const next = { ...signoffs, appraisee: { name: profile?.full_name ?? "Appraisee", signed_at: ts } };
+    setSignoffs(next);
+    await supabase.from("appraisals").update({
+      employee_signed_at: ts,
+      cycle_signoffs: next as never,
+    }).eq("id", id);
     setSignedAt(ts);
     toast.success("Target agreement signed");
     qc.invalidateQueries({ queryKey: ["appraisal", user.id] });
+  }
+
+  async function recordSignoff(slot: keyof CycleSignoffs, name: string) {
+    if (!name.trim()) return toast.error("Enter a name");
+    const id = await ensureAppraisal();
+    const next = { ...signoffs, [slot]: { name: name.trim(), signed_at: new Date().toISOString() } };
+    setSignoffs(next);
+    await supabase.from("appraisals").update({ cycle_signoffs: next as never }).eq("id", id);
+    toast.success("Signature recorded");
   }
 
   if (isLoading) return <div className="min-h-screen"><AppHeader authenticated userId={user.id} /><div className="p-10 text-center text-muted-foreground">Loading appraisal…</div></div>;
