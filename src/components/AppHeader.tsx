@@ -49,16 +49,22 @@ export function AppHeader({ authenticated = false, userId }: { authenticated?: b
               <Link to="/midyear" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
                 Mid-Year
               </Link>
+              <Link to="/endyear" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                End-Year
+              </Link>
               <Link to="/appeals" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
                 Appeals
+              </Link>
+              <Link to="/profile" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                Profile
               </Link>
               {hasAnyRole(roles, ["appeals_committee", "super_admin"]) && (
                 <Link to="/committee/appeals" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
                   Committee
                 </Link>
               )}
-              {hasAnyRole(roles, ["system_admin", "super_admin"]) && (
-                <Link to="/admin/roles" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted sm:inline-block" activeProps={{ className: "bg-muted" }}>
+              {hasAnyRole(roles, ["system_admin", "super_admin", "hr"]) && (
+                <Link to="/admin" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted sm:inline-block" activeProps={{ className: "bg-muted" }}>
                   Admin
                 </Link>
               )}
