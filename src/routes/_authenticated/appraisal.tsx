@@ -87,6 +87,8 @@ function AppraisalPage() {
       setRejectionReason(data.existing.rejection_reason ?? null);
       setSupervisorComments(data.existing.supervisor_comments ?? null);
       setSupervisorReviewedAt(data.existing.supervisor_reviewed_at ?? null);
+      setSelfCommitments(data.existing.self_commitments ?? "");
+      setSignoffs((data.existing.cycle_signoffs as CycleSignoffs) ?? {});
       const sorted = [...(data.existing.targets ?? [])].sort((a, b) => a.sort_order - b.sort_order);
       setTargets(sorted.map((t) => ({
         id: t.id,
