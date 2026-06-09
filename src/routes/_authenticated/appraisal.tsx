@@ -345,6 +345,20 @@ function AppraisalPage() {
           </div>
         </Card>
 
+        {/* SECTION 2B - Self-statement / Commitments at start of cycle */}
+        <Card className="mt-6 p-6">
+          <SectionHeader number="2B" title="Self-statement & commitments" />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Before submitting to your supervisor, describe your personal commitments, growth goals and how you intend to meet the targets above.
+          </p>
+          <div className="mt-4">
+            <Label className="mb-1.5 block text-xs">My commitments this cycle</Label>
+            <Textarea rows={5} disabled={locked} value={selfCommitments}
+              onChange={(e) => setSelfCommitments(e.target.value)}
+              placeholder="e.g. I commit to attending two professional development courses, mentoring junior staff…" />
+          </div>
+        </Card>
+
         {/* SECTION 2C */}
         <Card className="mt-6 p-6">
           <SectionHeader number="2C" title="Target Agreement Signatures" />
@@ -375,6 +389,34 @@ function AppraisalPage() {
             </div>
           </div>
         </Card>
+
+        {/* SECTION 2D - Cycle sign-off chains */}
+        <Card className="mt-6 p-6">
+          <SectionHeader number="2D" title="Cycle sign-off chain" />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Required signatures before the cycle is formally opened. Top chain authorises county-wide. Bottom chain endorses this individual appraisal.
+          </p>
+
+          <div className="mt-5">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Authorisation chain</div>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Individual endorsement chain</div>
+            <div className="mt-2 grid gap-3 sm:grid-cols-3">
+              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked} fixedName={profile?.full_name ?? undefined} />
+              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+            </div>
+          </div>
+        </Card>
+
 
         {/* Rating Matrix preview */}
         <Card className="mt-6 p-6">
