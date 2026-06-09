@@ -80,7 +80,13 @@ function EndYearPage() {
   async function save() {
     try {
       for (const r of rows) {
-        const patch: Record<string, unknown> = {};
+        const patch: {
+          endyear_actual?: string;
+          endyear_self_score?: number | null;
+          endyear_self_comment?: string;
+          endyear_supervisor_score?: number | null;
+          endyear_supervisor_comment?: string;
+        } = {};
         if (isMine) {
           patch.endyear_actual = r.endyear_actual;
           patch.endyear_self_score = r.endyear_self_score;
