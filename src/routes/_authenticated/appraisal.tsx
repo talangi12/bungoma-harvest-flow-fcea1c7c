@@ -34,6 +34,17 @@ type TargetRow = {
 
 const period = `FY ${new Date().getFullYear()}/${(new Date().getFullYear() + 1).toString().slice(-2)}`;
 
+type SignatureSlot = { name?: string; signed_at?: string };
+type CycleSignoffs = {
+  governor?: SignatureSlot;
+  cec?: SignatureSlot;
+  chief_officer?: SignatureSlot;
+  director?: SignatureSlot;
+  appraisee?: SignatureSlot;
+  supervisor?: SignatureSlot;
+  director_endorsement?: SignatureSlot;
+};
+
 function AppraisalPage() {
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
@@ -47,6 +58,8 @@ function AppraisalPage() {
   const [supervisorReviewedAt, setSupervisorReviewedAt] = useState<string | null>(null);
   const [targets, setTargets] = useState<TargetRow[]>([]);
   const [saving, setSaving] = useState(false);
+  const [selfCommitments, setSelfCommitments] = useState("");
+  const [signoffs, setSignoffs] = useState<CycleSignoffs>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["appraisal", user.id],
