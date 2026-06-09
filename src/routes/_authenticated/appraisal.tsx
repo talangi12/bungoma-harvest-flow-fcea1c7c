@@ -34,6 +34,17 @@ type TargetRow = {
 
 const period = `FY ${new Date().getFullYear()}/${(new Date().getFullYear() + 1).toString().slice(-2)}`;
 
+type SignatureSlot = { name?: string; signed_at?: string };
+type CycleSignoffs = {
+  governor?: SignatureSlot;
+  cec?: SignatureSlot;
+  chief_officer?: SignatureSlot;
+  director?: SignatureSlot;
+  appraisee?: SignatureSlot;
+  supervisor?: SignatureSlot;
+  director_endorsement?: SignatureSlot;
+};
+
 function AppraisalPage() {
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
@@ -47,6 +58,8 @@ function AppraisalPage() {
   const [supervisorReviewedAt, setSupervisorReviewedAt] = useState<string | null>(null);
   const [targets, setTargets] = useState<TargetRow[]>([]);
   const [saving, setSaving] = useState(false);
+  const [selfCommitments, setSelfCommitments] = useState("");
+  const [signoffs, setSignoffs] = useState<CycleSignoffs>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["appraisal", user.id],
@@ -74,6 +87,8 @@ function AppraisalPage() {
       setRejectionReason(data.existing.rejection_reason ?? null);
       setSupervisorComments(data.existing.supervisor_comments ?? null);
       setSupervisorReviewedAt(data.existing.supervisor_reviewed_at ?? null);
+      setSelfCommitments(data.existing.self_commitments ?? "");
+      setSignoffs((data.existing.cycle_signoffs as CycleSignoffs) ?? {});
       const sorted = [...(data.existing.targets ?? [])].sort((a, b) => a.sort_order - b.sort_order);
       setTargets(sorted.map((t) => ({
         id: t.id,
@@ -156,6 +171,8 @@ function AppraisalPage() {
         rating: totals.rating,
         chosen_supervisor_id: supervisorId || null,
         rejection_reason: submit ? null : rejectionReason,
+        self_commitments: selfCommitments || null,
+        cycle_signoffs: signoffs as never,
       }).eq("id", id);
 
       setStatus(newStatus);
@@ -173,10 +190,24 @@ function AppraisalPage() {
   async function signEmployee() {
     const id = await ensureAppraisal();
     const ts = new Date().toISOString();
-    await supabase.from("appraisals").update({ employee_signed_at: ts }).eq("id", id);
+    const next = { ...signoffs, appraisee: { name: profile?.full_name ?? "Appraisee", signed_at: ts } };
+    setSignoffs(next);
+    await supabase.from("appraisals").update({
+      employee_signed_at: ts,
+      cycle_signoffs: next as never,
+    }).eq("id", id);
     setSignedAt(ts);
     toast.success("Target agreement signed");
     qc.invalidateQueries({ queryKey: ["appraisal", user.id] });
+  }
+
+  async function recordSignoff(slot: keyof CycleSignoffs, name: string) {
+    if (!name.trim()) return toast.error("Enter a name");
+    const id = await ensureAppraisal();
+    const next = { ...signoffs, [slot]: { name: name.trim(), signed_at: new Date().toISOString() } };
+    setSignoffs(next);
+    await supabase.from("appraisals").update({ cycle_signoffs: next as never }).eq("id", id);
+    toast.success("Signature recorded");
   }
 
   if (isLoading) return <div className="min-h-screen"><AppHeader authenticated userId={user.id} /><div className="p-10 text-center text-muted-foreground">Loading appraisal…</div></div>;
@@ -314,6 +345,20 @@ function AppraisalPage() {
           </div>
         </Card>
 
+        {/* SECTION 2B - Self-statement / Commitments at start of cycle */}
+        <Card className="mt-6 p-6">
+          <SectionHeader number="2B" title="Self-statement & commitments" />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Before submitting to your supervisor, describe your personal commitments, growth goals and how you intend to meet the targets above.
+          </p>
+          <div className="mt-4">
+            <Label className="mb-1.5 block text-xs">My commitments this cycle</Label>
+            <Textarea rows={5} disabled={locked} value={selfCommitments}
+              onChange={(e) => setSelfCommitments(e.target.value)}
+              placeholder="e.g. I commit to attending two professional development courses, mentoring junior staff…" />
+          </div>
+        </Card>
+
         {/* SECTION 2C */}
         <Card className="mt-6 p-6">
           <SectionHeader number="2C" title="Target Agreement Signatures" />
@@ -344,6 +389,34 @@ function AppraisalPage() {
             </div>
           </div>
         </Card>
+
+        {/* SECTION 2D - Cycle sign-off chains */}
+        <Card className="mt-6 p-6">
+          <SectionHeader number="2D" title="Cycle sign-off chain" />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Required signatures before the cycle is formally opened. Top chain authorises county-wide. Bottom chain endorses this individual appraisal.
+          </p>
+
+          <div className="mt-5">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Authorisation chain</div>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">Individual endorsement chain</div>
+            <div className="mt-2 grid gap-3 sm:grid-cols-3">
+              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked} fixedName={profile?.full_name ?? undefined} />
+              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+            </div>
+          </div>
+        </Card>
+
 
         {/* Rating Matrix preview */}
         <Card className="mt-6 p-6">
@@ -443,3 +516,34 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
+
+function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
+  label: string;
+  slot: keyof CycleSignoffs;
+  signoffs: CycleSignoffs;
+  onSign: (slot: keyof CycleSignoffs, name: string) => void;
+  disabled?: boolean;
+  fixedName?: string;
+}) {
+  const [name, setName] = useState(fixedName ?? "");
+  const sig = signoffs[slot];
+  return (
+    <div className="rounded-lg border border-dashed border-border p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</div>
+      {sig?.signed_at ? (
+        <div className="mt-1.5">
+          <div className="font-display text-sm font-bold italic text-primary">{sig.name}</div>
+          <div className="text-[10px] text-muted-foreground">Signed {new Date(sig.signed_at).toLocaleDateString()}</div>
+        </div>
+      ) : (
+        <div className="mt-1.5 space-y-1.5">
+          <Input className="h-8 text-xs" placeholder="Name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
+          <Button size="sm" variant="outline" className="h-7 w-full text-xs" disabled={disabled} onClick={() => onSign(slot, name)}>
+            <FileSignature className="mr-1 h-3 w-3" /> Sign
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+

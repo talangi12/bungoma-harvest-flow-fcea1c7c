@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMidyearRouteImport } from './routes/_authenticated/midyear'
+import { Route as AuthenticatedEndyearRouteImport } from './routes/_authenticated/endyear'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppraisalRouteImport } from './routes/_authenticated/appraisal'
 import { Route as AuthenticatedAppealsRouteImport } from './routes/_authenticated/appeals'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_authenticated/supervisor.inbox'
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -36,9 +39,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMidyearRoute = AuthenticatedMidyearRouteImport.update({
   id: '/midyear',
   path: '/midyear',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEndyearRoute = AuthenticatedEndyearRouteImport.update({
+  id: '/endyear',
+  path: '/endyear',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -54,6 +67,11 @@ const AuthenticatedAppraisalRoute = AuthenticatedAppraisalRouteImport.update({
 const AuthenticatedAppealsRoute = AuthenticatedAppealsRouteImport.update({
   id: '/appeals',
   path: '/appeals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSupervisorInboxRoute =
@@ -91,11 +109,14 @@ export interface FileRoutesByFullPath {
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRoutesByTo {
@@ -104,11 +125,14 @@ export interface FileRoutesByTo {
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRoutesById {
@@ -119,11 +143,14 @@ export interface FileRoutesById {
   '/_authenticated/appeals': typeof AuthenticatedAppealsRoute
   '/_authenticated/appraisal': typeof AuthenticatedAppraisalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/endyear': typeof AuthenticatedEndyearRoute
   '/_authenticated/midyear': typeof AuthenticatedMidyearRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/_authenticated/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
 export interface FileRouteTypes {
@@ -134,11 +161,14 @@ export interface FileRouteTypes {
     | '/appeals'
     | '/appraisal'
     | '/dashboard'
+    | '/endyear'
     | '/midyear'
+    | '/profile'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
+    | '/admin/'
     | '/supervisor/review/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -147,11 +177,14 @@ export interface FileRouteTypes {
     | '/appeals'
     | '/appraisal'
     | '/dashboard'
+    | '/endyear'
     | '/midyear'
+    | '/profile'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
+    | '/admin'
     | '/supervisor/review/$id'
   id:
     | '__root__'
@@ -161,11 +194,14 @@ export interface FileRouteTypes {
     | '/_authenticated/appeals'
     | '/_authenticated/appraisal'
     | '/_authenticated/dashboard'
+    | '/_authenticated/endyear'
     | '/_authenticated/midyear'
+    | '/_authenticated/profile'
     | '/_authenticated/admin/roles'
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
     | '/_authenticated/supervisor/inbox'
+    | '/_authenticated/admin/'
     | '/_authenticated/supervisor/review/$id'
   fileRoutesById: FileRoutesById
 }
@@ -198,11 +234,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/midyear': {
       id: '/_authenticated/midyear'
       path: '/midyear'
       fullPath: '/midyear'
       preLoaderRoute: typeof AuthenticatedMidyearRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/endyear': {
+      id: '/_authenticated/endyear'
+      path: '/endyear'
+      fullPath: '/endyear'
+      preLoaderRoute: typeof AuthenticatedEndyearRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -224,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/appeals'
       fullPath: '/appeals'
       preLoaderRoute: typeof AuthenticatedAppealsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/supervisor/inbox': {
@@ -268,11 +325,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppealsRoute: typeof AuthenticatedAppealsRoute
   AuthenticatedAppraisalRoute: typeof AuthenticatedAppraisalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEndyearRoute: typeof AuthenticatedEndyearRoute
   AuthenticatedMidyearRoute: typeof AuthenticatedMidyearRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCommitteeAppealsRoute: typeof AuthenticatedCommitteeAppealsRoute
   AuthenticatedSupervisorInboxRoute: typeof AuthenticatedSupervisorInboxRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedSupervisorReviewIdRoute: typeof AuthenticatedSupervisorReviewIdRoute
 }
 
@@ -280,11 +340,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppealsRoute: AuthenticatedAppealsRoute,
   AuthenticatedAppraisalRoute: AuthenticatedAppraisalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEndyearRoute: AuthenticatedEndyearRoute,
   AuthenticatedMidyearRoute: AuthenticatedMidyearRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCommitteeAppealsRoute: AuthenticatedCommitteeAppealsRoute,
   AuthenticatedSupervisorInboxRoute: AuthenticatedSupervisorInboxRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedSupervisorReviewIdRoute: AuthenticatedSupervisorReviewIdRoute,
 }
 
@@ -299,13 +362,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
