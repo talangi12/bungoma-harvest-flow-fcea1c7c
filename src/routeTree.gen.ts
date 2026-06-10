@@ -20,6 +20,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppraisalRouteImport } from './routes/_authenticated/appraisal'
 import { Route as AuthenticatedAppealsRouteImport } from './routes/_authenticated/appeals'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as ApiPublicBootstrapSuper26RouteImport } from './routes/api/public/bootstrap-super26'
 import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_authenticated/supervisor.inbox'
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -82,6 +83,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicBootstrapSuper26Route =
+  ApiPublicBootstrapSuper26RouteImport.update({
+    id: '/api/public/bootstrap-super26',
+    path: '/api/public/bootstrap-super26',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedSupervisorInboxRoute =
   AuthenticatedSupervisorInboxRouteImport.update({
     id: '/supervisor/inbox',
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/_authenticated/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
+  '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
+    | '/api/public/bootstrap-super26'
     | '/admin/'
     | '/supervisor/review/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
+    | '/api/public/bootstrap-super26'
     | '/admin'
     | '/supervisor/review/$id'
   id:
@@ -238,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
     | '/_authenticated/supervisor/inbox'
+    | '/api/public/bootstrap-super26'
     | '/_authenticated/admin/'
     | '/_authenticated/supervisor/review/$id'
   fileRoutesById: FileRoutesById
@@ -247,6 +260,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicBootstrapSuper26Route: typeof ApiPublicBootstrapSuper26Route
 }
 
 declare module '@tanstack/react-router' {
@@ -327,6 +341,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/bootstrap-super26': {
+      id: '/api/public/bootstrap-super26'
+      path: '/api/public/bootstrap-super26'
+      fullPath: '/api/public/bootstrap-super26'
+      preLoaderRoute: typeof ApiPublicBootstrapSuper26RouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/supervisor/inbox': {
       id: '/_authenticated/supervisor/inbox'
@@ -422,7 +443,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicBootstrapSuper26Route: ApiPublicBootstrapSuper26Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
