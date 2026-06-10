@@ -189,15 +189,20 @@ function DeptActivations({ cycleId, departments, userId, canAdminOverride }: { c
             return (
               <tr key={d} className="border-t border-border">
                 <td className="py-2 font-medium">{d}</td>
-                {(["chief_officer", "director", "supervisor"] as const).map((k) => (
-                  <td key={k} className="py-2">
-                    {a?.[`${k}_signed_at`] ? (
-                      <span className="inline-flex items-center gap-1 text-primary"><CheckCircle2 className="h-3 w-3" /> Signed</span>
-                    ) : (
-                      <button onClick={() => sign(d, k)} className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
-                        <Circle className="h-3 w-3" /> Sign
-                      </button>
-                    )}
+                {(["chief_officer", "director", "supervisor"] as const).map((k) => {
+                  const signedAt = a ? (k === "chief_officer" ? a.chief_officer_signed_at : k === "director" ? a.director_signed_at : a.supervisor_signed_at) : null;
+                  return (
+                    <td key={k} className="py-2">
+                      {signedAt ? (
+                        <span className="inline-flex items-center gap-1 text-primary"><CheckCircle2 className="h-3 w-3" /> Signed</span>
+                      ) : (
+                        <button onClick={() => sign(d, k)} className="inline-flex items-center gap-1 text-muted-foreground hover:text-primary">
+                          <Circle className="h-3 w-3" /> Sign
+                        </button>
+                      )}
+                    </td>
+                  );
+                })}
                   </td>
                 ))}
                 <td className="py-2">
