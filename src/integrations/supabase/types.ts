@@ -62,6 +62,45 @@ export type Database = {
         }
         Relationships: []
       }
+      appraisal_cycles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          fy_end: string
+          fy_label: string
+          fy_start: string
+          governor_signed_at: string | null
+          governor_signed_by: string | null
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          fy_end: string
+          fy_label: string
+          fy_start: string
+          governor_signed_at?: string | null
+          governor_signed_by?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          fy_end?: string
+          fy_label?: string
+          fy_start?: string
+          governor_signed_at?: string | null
+          governor_signed_by?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       appraisals: {
         Row: {
           chosen_supervisor_id: string | null
@@ -157,6 +196,113 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      cycle_department_activations: {
+        Row: {
+          chief_officer_id: string | null
+          chief_officer_signed_at: string | null
+          cycle_id: string
+          department: string
+          director_id: string | null
+          director_signed_at: string | null
+          id: string
+          supervisor_id: string | null
+          supervisor_signed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          chief_officer_id?: string | null
+          chief_officer_signed_at?: string | null
+          cycle_id: string
+          department: string
+          director_id?: string | null
+          director_signed_at?: string | null
+          id?: string
+          supervisor_id?: string | null
+          supervisor_signed_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          chief_officer_id?: string | null
+          chief_officer_signed_at?: string | null
+          cycle_id?: string
+          department?: string
+          director_id?: string | null
+          director_signed_at?: string | null
+          id?: string
+          supervisor_id?: string | null
+          supervisor_signed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cycle_department_activations_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "appraisal_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -195,10 +341,13 @@ export type Database = {
       }
       profiles: {
         Row: {
+          chief_officer_id: string | null
           created_at: string
           department: string | null
           designation: string | null
+          director_id: string | null
           directorate: string | null
+          division: string | null
           email: string | null
           employee_no: string | null
           employment_date: string | null
@@ -214,10 +363,13 @@ export type Database = {
           work_station: string | null
         }
         Insert: {
+          chief_officer_id?: string | null
           created_at?: string
           department?: string | null
           designation?: string | null
+          director_id?: string | null
           directorate?: string | null
+          division?: string | null
           email?: string | null
           employee_no?: string | null
           employment_date?: string | null
@@ -233,10 +385,13 @@ export type Database = {
           work_station?: string | null
         }
         Update: {
+          chief_officer_id?: string | null
           created_at?: string
           department?: string | null
           designation?: string | null
+          director_id?: string | null
           directorate?: string | null
+          division?: string | null
           email?: string | null
           employee_no?: string | null
           employment_date?: string | null
@@ -252,6 +407,20 @@ export type Database = {
           work_station?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_chief_officer_id_fkey"
+            columns: ["chief_officer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_director_id_fkey"
+            columns: ["director_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_supervisor_id_fkey"
             columns: ["supervisor_id"]
@@ -341,18 +510,21 @@ export type Database = {
       user_roles: {
         Row: {
           created_at: string
+          department: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
           created_at?: string
+          department?: string | null
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
           created_at?: string
+          department?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
@@ -365,11 +537,20 @@ export type Database = {
     }
     Functions: {
       classify_rating: { Args: { pct: number }; Returns: string }
+      cycle_active_for_dept: { Args: { _dept: string }; Returns: boolean }
       endyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      has_role_in_dept: {
+        Args: {
+          _dept: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _uid: string
         }
         Returns: boolean
       }
@@ -382,6 +563,16 @@ export type Database = {
           full_name: string
           id: string
         }[]
+      }
+      log_audit: {
+        Args: {
+          _action: string
+          _entity_id?: string
+          _entity_type?: string
+          _new?: Json
+          _old?: Json
+        }
+        Returns: undefined
       }
       midyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
     }
