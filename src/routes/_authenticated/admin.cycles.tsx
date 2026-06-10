@@ -203,8 +203,6 @@ function DeptActivations({ cycleId, departments, userId, canAdminOverride }: { c
                     </td>
                   );
                 })}
-                  </td>
-                ))}
                 <td className="py-2">
                   {allSigned ? (
                     <Badge className="gap-1 bg-primary text-primary-foreground"><ShieldCheck className="h-3 w-3" /> Active</Badge>
