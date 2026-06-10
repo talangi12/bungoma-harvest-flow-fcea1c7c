@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRoles, hasAnyRole } from "@/hooks/useRoles";
-import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3 } from "lucide-react";
+import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Console — Bungoma EPMS" }] }),
@@ -72,9 +72,13 @@ function AdminHome() {
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AdminCard to="/admin/users" icon={UserPlus} title="Create user account"
-            desc="Provision HR officers, supervisors, system admins and committee members." />
+            desc="Provision HR officers, supervisors, directors, chief officers, governor, system admins and committee members." />
           <AdminCard to="/admin/roles" icon={UserCog} title="Manage roles"
-            desc="Grant or revoke EPMS roles for any registered user." />
+            desc="Grant or revoke EPMS roles for any registered user. Search by name, email, employee number." />
+          <AdminCard to="/admin/cycles" icon={CalendarDays} title="Appraisal cycles"
+            desc="Open the FY cycle, capture Governor approval and activate departments." />
+          <AdminCard to="/admin/audit" icon={ScrollText} title="Audit logs"
+            desc="Every role change, signature, approval and reset — searchable trail." />
           <AdminCard to="/committee/appeals" icon={Gavel} title="Appeals committee queue"
             desc="Review filed appeals and issue rulings." />
           <AdminCard to="/supervisor/inbox" icon={ClipboardCheck} title="Supervisor inbox"

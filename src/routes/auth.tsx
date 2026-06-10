@@ -14,9 +14,11 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+type Mode = "signin" | "signup" | "forgot";
+
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -44,11 +46,19 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Account created. Signing you in…");
-      } else {
+        navigate({ to: "/dashboard", replace: true });
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        navigate({ to: "/dashboard", replace: true });
+      } else {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        toast.success("Reset link sent. Check your inbox.");
+        setMode("signin");
       }
-      navigate({ to: "/dashboard", replace: true });
     } catch (err: unknown) {
       const m = err instanceof Error ? err.message : "Authentication failed";
       toast.error(m);
@@ -57,9 +67,15 @@ function AuthPage() {
     }
   }
 
+  const title = mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password";
+  const subtitle = mode === "signin"
+    ? "Sign in to manage your performance appraisal."
+    : mode === "signup"
+      ? "Register as a county employee to begin your appraisal."
+      : "Enter your email and we'll send a secure reset link.";
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Brand panel */}
       <div className="relative hidden overflow-hidden lg:block">
         <img src={landscape} alt="Bungoma landscape" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-hero opacity-90" />
@@ -72,18 +88,13 @@ function AuthPage() {
             </div>
           </Link>
           <div>
-            <h2 className="font-display text-4xl font-bold leading-tight text-balance">
-              Performance.<br />Integrity.<br />Service.
-            </h2>
-            <p className="mt-4 max-w-md text-primary-foreground/85">
-              A modern Enterprise Performance Management System for the County Government of Bungoma — built for over 7,000 public servants.
-            </p>
+            <h2 className="font-display text-4xl font-bold leading-tight text-balance">Performance.<br />Integrity.<br />Service.</h2>
+            <p className="mt-4 max-w-md text-primary-foreground/85">A modern Enterprise Performance Management System for the County Government of Bungoma — built for over 7,000 public servants.</p>
           </div>
           <div className="text-xs opacity-70">© {new Date().getFullYear()} County Government of Bungoma</div>
         </div>
       </div>
 
-      {/* Form panel */}
       <div className="flex items-center justify-center bg-background p-6 sm:p-10">
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
@@ -94,12 +105,8 @@ function AuthPage() {
             </div>
           </div>
 
-          <h1 className="font-display text-3xl font-bold">
-            {mode === "signin" ? "Welcome back" : "Create your account"}
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {mode === "signin" ? "Sign in to manage your performance appraisal." : "Register as a county employee to begin your appraisal."}
-          </p>
+          <h1 className="font-display text-3xl font-bold">{title}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
 
           <Card className="mt-6 p-6 shadow-card">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -125,22 +132,38 @@ function AuthPage() {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@bungoma.go.ke" />
               </div>
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
+              {mode !== "forgot" && (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    {mode === "signin" && (
+                      <button type="button" onClick={() => setMode("forgot")} className="text-xs font-medium text-primary hover:underline">
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+                </div>
+              )}
 
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+                {loading ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
               </Button>
             </form>
           </Card>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            {mode === "signin" ? "New to EPMS?" : "Already have an account?"}{" "}
-            <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} className="font-medium text-primary hover:underline">
-              {mode === "signin" ? "Create account" : "Sign in"}
-            </button>
+            {mode === "forgot" ? (
+              <button onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">← Back to sign in</button>
+            ) : mode === "signin" ? (
+              <>New to EPMS?{" "}
+                <button onClick={() => setMode("signup")} className="font-medium text-primary hover:underline">Create account</button>
+              </>
+            ) : (
+              <>Already have an account?{" "}
+                <button onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">Sign in</button>
+              </>
+            )}
           </p>
         </div>
       </div>
