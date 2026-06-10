@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,8 +24,15 @@ import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_auth
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
+import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
+import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedSupervisorReviewIdRouteImport } from './routes/_authenticated/supervisor.review.$id'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -96,6 +104,17 @@ const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
   path: '/admin/roles',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminCyclesRoute =
+  AuthenticatedAdminCyclesRouteImport.update({
+    id: '/admin/cycles',
+    path: '/admin/cycles',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSupervisorReviewIdRoute =
   AuthenticatedSupervisorReviewIdRouteImport.update({
     id: '/supervisor/review/$id',
@@ -106,12 +125,15 @@ const AuthenticatedSupervisorReviewIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -122,12 +144,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -140,12 +165,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/appeals': typeof AuthenticatedAppealsRoute
   '/_authenticated/appraisal': typeof AuthenticatedAppraisalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/endyear': typeof AuthenticatedEndyearRoute
   '/_authenticated/midyear': typeof AuthenticatedMidyearRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -158,12 +186,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/reset-password'
     | '/appeals'
     | '/appraisal'
     | '/dashboard'
     | '/endyear'
     | '/midyear'
     | '/profile'
+    | '/admin/audit'
+    | '/admin/cycles'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
@@ -174,12 +205,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/reset-password'
     | '/appeals'
     | '/appraisal'
     | '/dashboard'
     | '/endyear'
     | '/midyear'
     | '/profile'
+    | '/admin/audit'
+    | '/admin/cycles'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
@@ -191,12 +225,15 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/reset-password'
     | '/_authenticated/appeals'
     | '/_authenticated/appraisal'
     | '/_authenticated/dashboard'
     | '/_authenticated/endyear'
     | '/_authenticated/midyear'
     | '/_authenticated/profile'
+    | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/cycles'
     | '/_authenticated/admin/roles'
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
@@ -209,10 +246,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -311,6 +356,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRolesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/cycles': {
+      id: '/_authenticated/admin/cycles'
+      path: '/admin/cycles'
+      fullPath: '/admin/cycles'
+      preLoaderRoute: typeof AuthenticatedAdminCyclesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/supervisor/review/$id': {
       id: '/_authenticated/supervisor/review/$id'
       path: '/supervisor/review/$id'
@@ -328,6 +387,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEndyearRoute: typeof AuthenticatedEndyearRoute
   AuthenticatedMidyearRoute: typeof AuthenticatedMidyearRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCommitteeAppealsRoute: typeof AuthenticatedCommitteeAppealsRoute
@@ -343,6 +404,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEndyearRoute: AuthenticatedEndyearRoute,
   AuthenticatedMidyearRoute: AuthenticatedMidyearRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
   AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCommitteeAppealsRoute: AuthenticatedCommitteeAppealsRoute,
@@ -358,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

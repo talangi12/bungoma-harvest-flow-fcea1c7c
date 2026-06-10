@@ -158,9 +158,11 @@ function DeptActivations({ cycleId, departments, userId, canAdminOverride }: { c
       return toast.error("Unauthorized Signatory. You do not possess the required role for this signature.");
     }
     const existing = (activations ?? []).find((a) => a.department === dept);
-    const payload: Record<string, unknown> = {};
-    payload[`${kind}_id`] = userId;
-    payload[`${kind}_signed_at`] = new Date().toISOString();
+    const now = new Date().toISOString();
+    const payload =
+      kind === "chief_officer" ? { chief_officer_id: userId, chief_officer_signed_at: now } :
+      kind === "director"      ? { director_id: userId, director_signed_at: now } :
+                                 { supervisor_id: userId, supervisor_signed_at: now };
 
     if (existing) {
       const { error } = await supabase.from("cycle_department_activations").update(payload).eq("id", existing.id);

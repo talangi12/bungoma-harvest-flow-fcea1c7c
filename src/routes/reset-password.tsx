@@ -39,7 +39,7 @@ function ResetPassword() {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      await supabase.rpc("log_audit", { _action: "password_reset", _entity_type: "auth", _entity_id: null, _old: null, _new: null }).catch(() => {});
+      try { await supabase.rpc("log_audit", { _action: "password_reset", _entity_type: "auth" }); } catch { /* non-fatal */ }
       toast.success("Password updated. Please sign in.");
       await supabase.auth.signOut();
       navigate({ to: "/auth", replace: true });
