@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRoles, hasAnyRole } from "@/hooks/useRoles";
-import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText } from "lucide-react";
+import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Console — Bungoma EPMS" }] }),
@@ -71,6 +71,10 @@ function AdminHome() {
         </div>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <AdminCard to="/admin/import" icon={UploadCloud} title="Hierarchical bulk import"
+            desc="Governor → CECs → Chief Officers → Directors → Employees. Each tier imports the next under strict departmental boundaries." />
+          <AdminCard to="/search" icon={SearchIcon} title="Employee search"
+            desc="Look up any employee by ID Number or Personal Number, scoped by your departmental authority." />
           <AdminCard to="/admin/users" icon={UserPlus} title="Create user account"
             desc="Provision HR officers, supervisors, directors, chief officers, governor, system admins and committee members." />
           <AdminCard to="/admin/roles" icon={UserCog} title="Manage roles"

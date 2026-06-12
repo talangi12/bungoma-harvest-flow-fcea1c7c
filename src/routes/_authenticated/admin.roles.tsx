@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin/roles")({
   component: AdminRoles,
 });
 
-const ASSIGNABLE: AppRole[] = ["employee", "supervisor", "hr", "system_admin", "super_admin", "appeals_committee"];
+const ASSIGNABLE: AppRole[] = ["employee", "supervisor", "hr", "system_admin", "super_admin", "appeals_committee", "governor", "cec", "chief_officer", "director"];
 
 function AdminRoles() {
   const { user } = Route.useRouteContext();
