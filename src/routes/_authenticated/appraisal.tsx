@@ -78,7 +78,7 @@ function AppraisalPage() {
 
   useEffect(() => {
     if (!data) return;
-    setProfile(data.profile);
+    setProfile(data.profile as unknown as Record<string, string | null> | null);
     if (data.existing) {
       setAppraisalId(data.existing.id);
       setStatus(data.existing.status);
