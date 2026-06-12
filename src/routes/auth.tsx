@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,71 +9,48 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import emblem from "@/assets/bungoma-emblem.png";
 import landscape from "@/assets/bungoma-landscape.jpg";
+import { resolveLoginEmail, bootstrapDefaultSuperAdmin } from "@/lib/auth-helpers.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Bungoma EPMS" }, { name: "description", content: "Sign in to the County Government of Bungoma Performance Management System." }] }),
   component: AuthPage,
 });
 
-type Mode = "signin" | "signup" | "forgot";
-
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [employeeNo, setEmployeeNo] = useState("");
-  const [department, setDepartment] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [personalNumber, setPersonalNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const resolveFn = useServerFn(resolveLoginEmail);
+  const bootstrapFn = useServerFn(bootstrapDefaultSuperAdmin);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) navigate({ to: "/dashboard", replace: true });
     });
-  }, [navigate]);
+    // Fire-and-forget bootstrap of the default super admin once on this page load
+    bootstrapFn({}).catch(() => {});
+  }, [navigate, bootstrapFn]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { full_name: fullName, employee_no: employeeNo, department },
-          },
-        });
-        if (error) throw error;
-        toast.success("Account created. Signing you in…");
-        navigate({ to: "/dashboard", replace: true });
-      } else if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate({ to: "/dashboard", replace: true });
+      const { email, must_change_password } = await resolveFn({ data: { id_number: idNumber.trim() } });
+      const { error } = await supabase.auth.signInWithPassword({ email, password: personalNumber });
+      if (error) throw error;
+      if (must_change_password) {
+        toast.info("Please set a new password to continue.");
+        navigate({ to: "/change-password", replace: true });
       } else {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
-        });
-        if (error) throw error;
-        toast.success("Reset link sent. Check your inbox.");
-        setMode("signin");
+        navigate({ to: "/dashboard", replace: true });
       }
-    } catch (err: unknown) {
-      const m = err instanceof Error ? err.message : "Authentication failed";
-      toast.error(m);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Sign in failed. Check your ID Number and Personal Number.");
     } finally {
       setLoading(false);
     }
   }
-
-  const title = mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password";
-  const subtitle = mode === "signin"
-    ? "Sign in to manage your performance appraisal."
-    : mode === "signup"
-      ? "Register as a county employee to begin your appraisal."
-      : "Enter your email and we'll send a secure reset link.";
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -105,65 +83,27 @@ function AuthPage() {
             </div>
           </div>
 
-          <h1 className="font-display text-3xl font-bold">{title}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
+          <h1 className="font-display text-3xl font-bold">Welcome back</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in with your National ID Number and Personal Number.</p>
 
           <Card className="mt-6 p-6 shadow-card">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {mode === "signup" && (
-                <>
-                  <div>
-                    <Label htmlFor="fullName">Full name</Label>
-                    <Input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Wanjala Nafula" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="empno">Employee No.</Label>
-                      <Input id="empno" value={employeeNo} onChange={(e) => setEmployeeNo(e.target.value)} placeholder="BGM-00123" />
-                    </div>
-                    <div>
-                      <Label htmlFor="dept">Department</Label>
-                      <Input id="dept" value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="Agriculture" />
-                    </div>
-                  </div>
-                </>
-              )}
               <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@bungoma.go.ke" />
+                <Label htmlFor="idn">ID Number</Label>
+                <Input id="idn" required value={idNumber} onChange={(e) => setIdNumber(e.target.value)} placeholder="e.g. 12345678" autoComplete="username" />
               </div>
-              {mode !== "forgot" && (
-                <div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    {mode === "signin" && (
-                      <button type="button" onClick={() => setMode("forgot")} className="text-xs font-medium text-primary hover:underline">
-                        Forgot password?
-                      </button>
-                    )}
-                  </div>
-                  <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-                </div>
-              )}
-
+              <div>
+                <Label htmlFor="pnum">Personal Number</Label>
+                <Input id="pnum" type="password" required value={personalNumber} onChange={(e) => setPersonalNumber(e.target.value)} placeholder="••••••••" autoComplete="current-password" />
+              </div>
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link"}
+                {loading ? "Please wait…" : "Sign in"}
               </Button>
             </form>
           </Card>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {mode === "forgot" ? (
-              <button onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">← Back to sign in</button>
-            ) : mode === "signin" ? (
-              <>New to EPMS?{" "}
-                <button onClick={() => setMode("signup")} className="font-medium text-primary hover:underline">Create account</button>
-              </>
-            ) : (
-              <>Already have an account?{" "}
-                <button onClick={() => setMode("signin")} className="font-medium text-primary hover:underline">Sign in</button>
-              </>
-            )}
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            New employees are onboarded by their Director. Contact your departmental administrator if you cannot sign in.
           </p>
         </div>
       </div>
