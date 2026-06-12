@@ -347,15 +347,22 @@ export type Database = {
           designation: string | null
           director_id: string | null
           directorate: string | null
+          disability_status: string | null
           division: string | null
           email: string | null
           employee_no: string | null
           employment_date: string | null
           employment_status: string | null
           full_name: string
+          gender: string | null
           id: string
+          id_number: string | null
+          imported_at: string | null
+          imported_by: string | null
           job_group: string | null
+          must_change_password: boolean
           national_id: string | null
+          personal_number: string | null
           phone: string | null
           photo_url: string | null
           supervisor_id: string | null
@@ -369,15 +376,22 @@ export type Database = {
           designation?: string | null
           director_id?: string | null
           directorate?: string | null
+          disability_status?: string | null
           division?: string | null
           email?: string | null
           employee_no?: string | null
           employment_date?: string | null
           employment_status?: string | null
           full_name: string
+          gender?: string | null
           id: string
+          id_number?: string | null
+          imported_at?: string | null
+          imported_by?: string | null
           job_group?: string | null
+          must_change_password?: boolean
           national_id?: string | null
+          personal_number?: string | null
           phone?: string | null
           photo_url?: string | null
           supervisor_id?: string | null
@@ -391,15 +405,22 @@ export type Database = {
           designation?: string | null
           director_id?: string | null
           directorate?: string | null
+          disability_status?: string | null
           division?: string | null
           email?: string | null
           employee_no?: string | null
           employment_date?: string | null
           employment_status?: string | null
           full_name?: string
+          gender?: string | null
           id?: string
+          id_number?: string | null
+          imported_at?: string | null
+          imported_by?: string | null
           job_group?: string | null
+          must_change_password?: boolean
           national_id?: string | null
+          personal_number?: string | null
           phone?: string | null
           photo_url?: string | null
           supervisor_id?: string | null
@@ -536,6 +557,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_import: {
+        Args: {
+          _actor: string
+          _dept: string
+          _directorate: string
+          _target_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      can_view_profile: {
+        Args: { _actor: string; _target: string }
+        Returns: boolean
+      }
       classify_rating: { Args: { pct: number }; Returns: string }
       cycle_active_for_dept: { Args: { _dept: string }; Returns: boolean }
       endyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
@@ -575,6 +609,10 @@ export type Database = {
         Returns: undefined
       }
       midyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
+      user_role_dept: {
+        Args: { _role: Database["public"]["Enums"]["app_role"]; _uid: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
@@ -593,6 +631,7 @@ export type Database = {
         | "appeals_committee"
         | "governor"
         | "director"
+        | "cec"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -736,6 +775,7 @@ export const Constants = {
         "appeals_committee",
         "governor",
         "director",
+        "cec",
       ],
     },
   },
