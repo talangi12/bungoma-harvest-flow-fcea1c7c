@@ -46,6 +46,9 @@ export function AppHeader({ authenticated = false, userId }: { authenticated?: b
                   Inbox
                 </Link>
               )}
+              <Link to="/quarterly" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
+                Quarterly
+              </Link>
               <Link to="/midyear" className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted md:inline-block" activeProps={{ className: "bg-muted" }}>
                 Mid-Year
               </Link>
