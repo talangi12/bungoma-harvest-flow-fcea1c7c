@@ -39,7 +39,7 @@ export const bulkImportEmployees = createServerFn({ method: "POST" })
         _actor: userId,
         _target_role: data.target_role,
         _dept: row.department,
-        _directorate: row.directorate || null,
+        _directorate: row.directorate || "",
       });
       if (authErr || !allowed) {
         results.push({ id_number: row.id_number, status: "error", message: "Not authorised to import this record" });

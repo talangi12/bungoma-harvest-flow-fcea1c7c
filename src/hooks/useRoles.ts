@@ -9,6 +9,7 @@ export type AppRole =
   | "super_admin"
   | "appeals_committee"
   | "governor"
+  | "cec"
   | "chief_officer"
   | "director";
 
@@ -20,6 +21,7 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   super_admin: "Super Admin",
   appeals_committee: "Appeals Committee",
   governor: "Governor",
+  cec: "County Executive Committee Member",
   chief_officer: "Chief Officer",
   director: "Director",
 };
@@ -31,9 +33,10 @@ export const ROLE_RESPONSIBILITIES: Record<AppRole, string> = {
   system_admin: "Manage users, assign roles, configure cycles and maintain system configuration.",
   super_admin: "Full administrative authority across the EPMS, including HR, system and audit operations.",
   appeals_committee: "Review and rule on appraisal appeals submitted by employees.",
-  governor: "Sign and authorise the annual appraisal cycle county-wide.",
-  chief_officer: "Authorise the appraisal cycle for the assigned department and oversee directors.",
-  director: "Endorse the appraisal cycle for the assigned department and oversee supervisors.",
+  governor: "Sign and authorise the annual appraisal cycle county-wide; imports CECs.",
+  cec: "Authorise the cycle for the assigned department; imports Chief Officers.",
+  chief_officer: "Authorise the appraisal cycle for the assigned department; imports Directors.",
+  director: "Endorse the appraisal cycle for the assigned directorate; imports employees and supervisors.",
 };
 
 export type UserRoleRow = { role: AppRole; department: string | null };
