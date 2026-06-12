@@ -13,10 +13,12 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedMidyearRouteImport } from './routes/_authenticated/midyear'
 import { Route as AuthenticatedEndyearRouteImport } from './routes/_authenticated/endyear'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authenticated/change-password'
 import { Route as AuthenticatedAppraisalRouteImport } from './routes/_authenticated/appraisal'
 import { Route as AuthenticatedAppealsRouteImport } from './routes/_authenticated/appeals'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -25,6 +27,7 @@ import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_auth
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
+import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin.import'
 import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedSupervisorReviewIdRouteImport } from './routes/_authenticated/supervisor.review.$id'
@@ -48,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -68,6 +76,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangePasswordRoute =
+  AuthenticatedChangePasswordRouteImport.update({
+    id: '/change-password',
+    path: '/change-password',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppraisalRoute = AuthenticatedAppraisalRouteImport.update({
   id: '/appraisal',
   path: '/appraisal',
@@ -111,6 +125,12 @@ const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
   path: '/admin/roles',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminImportRoute =
+  AuthenticatedAdminImportRouteImport.update({
+    id: '/admin/import',
+    path: '/admin/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCyclesRoute =
   AuthenticatedAdminCyclesRouteImport.update({
     id: '/admin/cycles',
@@ -135,12 +155,15 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -155,12 +178,15 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/appeals': typeof AuthenticatedAppealsRoute
   '/appraisal': typeof AuthenticatedAppraisalRoute
+  '/change-password': typeof AuthenticatedChangePasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/endyear': typeof AuthenticatedEndyearRoute
   '/midyear': typeof AuthenticatedMidyearRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -177,12 +203,15 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/appeals': typeof AuthenticatedAppealsRoute
   '/_authenticated/appraisal': typeof AuthenticatedAppraisalRoute
+  '/_authenticated/change-password': typeof AuthenticatedChangePasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/endyear': typeof AuthenticatedEndyearRoute
   '/_authenticated/midyear': typeof AuthenticatedMidyearRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -199,12 +228,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/appeals'
     | '/appraisal'
+    | '/change-password'
     | '/dashboard'
     | '/endyear'
     | '/midyear'
     | '/profile'
+    | '/search'
     | '/admin/audit'
     | '/admin/cycles'
+    | '/admin/import'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
@@ -219,12 +251,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/appeals'
     | '/appraisal'
+    | '/change-password'
     | '/dashboard'
     | '/endyear'
     | '/midyear'
     | '/profile'
+    | '/search'
     | '/admin/audit'
     | '/admin/cycles'
+    | '/admin/import'
     | '/admin/roles'
     | '/admin/users'
     | '/committee/appeals'
@@ -240,12 +275,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/appeals'
     | '/_authenticated/appraisal'
+    | '/_authenticated/change-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/endyear'
     | '/_authenticated/midyear'
     | '/_authenticated/profile'
+    | '/_authenticated/search'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/cycles'
+    | '/_authenticated/admin/import'
     | '/_authenticated/admin/roles'
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
@@ -293,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/search': {
+      id: '/_authenticated/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthenticatedSearchRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -319,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/change-password': {
+      id: '/_authenticated/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof AuthenticatedChangePasswordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/appraisal': {
@@ -377,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRolesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/import': {
+      id: '/_authenticated/admin/import'
+      path: '/admin/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/cycles': {
       id: '/_authenticated/admin/cycles'
       path: '/admin/cycles'
@@ -404,12 +463,15 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppealsRoute: typeof AuthenticatedAppealsRoute
   AuthenticatedAppraisalRoute: typeof AuthenticatedAppraisalRoute
+  AuthenticatedChangePasswordRoute: typeof AuthenticatedChangePasswordRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEndyearRoute: typeof AuthenticatedEndyearRoute
   AuthenticatedMidyearRoute: typeof AuthenticatedMidyearRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
+  AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCommitteeAppealsRoute: typeof AuthenticatedCommitteeAppealsRoute
@@ -421,12 +483,15 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppealsRoute: AuthenticatedAppealsRoute,
   AuthenticatedAppraisalRoute: AuthenticatedAppraisalRoute,
+  AuthenticatedChangePasswordRoute: AuthenticatedChangePasswordRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEndyearRoute: AuthenticatedEndyearRoute,
   AuthenticatedMidyearRoute: AuthenticatedMidyearRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
+  AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCommitteeAppealsRoute: AuthenticatedCommitteeAppealsRoute,
