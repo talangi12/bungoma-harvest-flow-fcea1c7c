@@ -83,6 +83,8 @@ function AdminHome() {
             desc="Open the FY cycle, capture Governor approval and activate departments." />
           <AdminCard to="/admin/audit" icon={ScrollText} title="Audit logs"
             desc="Every role change, signature, approval and reset — searchable trail." />
+          <AdminCard to="/admin/login-audit" icon={ScrollText} title="Login audit"
+            desc="Every successful and failed sign-in attempt, with IP and user-agent details." />
           <AdminCard to="/committee/appeals" icon={Gavel} title="Appeals committee queue"
             desc="Review filed appeals and issue rulings." />
           <AdminCard to="/supervisor/inbox" icon={ClipboardCheck} title="Supervisor inbox"

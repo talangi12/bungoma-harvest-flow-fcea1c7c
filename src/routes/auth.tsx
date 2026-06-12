@@ -32,13 +32,30 @@ function AuthPage() {
     bootstrapFn({}).catch(() => {});
   }, [navigate, bootstrapFn]);
 
+  async function recordEvent(success: boolean, userId: string | null, email: string | null, reason?: string) {
+    try {
+      await supabase.from("login_events").insert({
+        user_id: userId,
+        id_number: idNumber.trim() || null,
+        email,
+        success,
+        failure_reason: reason ?? null,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
+      });
+    } catch { /* non-blocking */ }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
       const { email, must_change_password } = await resolveFn({ data: { id_number: idNumber.trim() } });
-      const { error } = await supabase.auth.signInWithPassword({ email, password: personalNumber });
-      if (error) throw error;
+      const { data: signed, error } = await supabase.auth.signInWithPassword({ email, password: personalNumber });
+      if (error) {
+        await recordEvent(false, null, email, error.message);
+        throw error;
+      }
+      await recordEvent(true, signed.user?.id ?? null, email);
       if (must_change_password) {
         toast.info("Please set a new password to continue.");
         navigate({ to: "/change-password", replace: true });
@@ -46,7 +63,8 @@ function AuthPage() {
         navigate({ to: "/dashboard", replace: true });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Sign in failed. Check your ID Number and Personal Number.");
+      const msg = err instanceof Error ? err.message : "Sign in failed. Check your ID Number and Personal Number.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

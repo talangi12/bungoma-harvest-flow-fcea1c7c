@@ -303,6 +303,42 @@ export type Database = {
         }
         Relationships: []
       }
+      login_events: {
+        Row: {
+          created_at: string
+          email: string | null
+          failure_reason: string | null
+          id: string
+          id_number: string | null
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          failure_reason?: string | null
+          id?: string
+          id_number?: string | null
+          ip_address?: string | null
+          success: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          failure_reason?: string | null
+          id?: string
+          id_number?: string | null
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -451,6 +487,72 @@ export type Database = {
           },
         ]
       }
+      target_quarter_progress: {
+        Row: {
+          achieved_value: string | null
+          appraisal_id: string
+          created_at: string
+          evidence_url: string | null
+          id: string
+          progress_note: string | null
+          quarter: number
+          reviewed_at: string | null
+          self_score: number | null
+          submitted_at: string | null
+          supervisor_comment: string | null
+          supervisor_score: number | null
+          target_id: string
+          updated_at: string
+        }
+        Insert: {
+          achieved_value?: string | null
+          appraisal_id: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          progress_note?: string | null
+          quarter: number
+          reviewed_at?: string | null
+          self_score?: number | null
+          submitted_at?: string | null
+          supervisor_comment?: string | null
+          supervisor_score?: number | null
+          target_id: string
+          updated_at?: string
+        }
+        Update: {
+          achieved_value?: string | null
+          appraisal_id?: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          progress_note?: string | null
+          quarter?: number
+          reviewed_at?: string | null
+          self_score?: number | null
+          submitted_at?: string | null
+          supervisor_comment?: string | null
+          supervisor_score?: number | null
+          target_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "target_quarter_progress_appraisal_id_fkey"
+            columns: ["appraisal_id"]
+            isOneToOne: false
+            referencedRelation: "appraisals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "target_quarter_progress_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "targets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       targets: {
         Row: {
           achieved_result: string | null
@@ -566,11 +668,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_sign_as_supervisor: {
+        Args: { _actor: string; _employee: string }
+        Returns: boolean
+      }
       can_view_profile: {
         Args: { _actor: string; _target: string }
         Returns: boolean
       }
       classify_rating: { Args: { pct: number }; Returns: string }
+      current_quarter: { Args: { _fy_start: string }; Returns: number }
       cycle_active_for_dept: { Args: { _dept: string }; Returns: boolean }
       endyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
       has_role: {
