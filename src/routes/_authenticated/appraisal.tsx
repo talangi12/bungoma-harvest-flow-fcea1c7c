@@ -49,7 +49,7 @@ function AppraisalPage() {
   const { user } = Route.useRouteContext();
   const qc = useQueryClient();
   const [appraisalId, setAppraisalId] = useState<string | null>(null);
-  const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
+  const [profile, setProfile] = useState<Record<string, string | null> | null>(null);
   const [status, setStatus] = useState<string>("draft");
   const [signedAt, setSignedAt] = useState<string | null>(null);
   const [supervisorId, setSupervisorId] = useState<string>("");
@@ -78,7 +78,7 @@ function AppraisalPage() {
 
   useEffect(() => {
     if (!data) return;
-    setProfile(data.profile);
+    setProfile(data.profile as unknown as Record<string, string | null> | null);
     if (data.existing) {
       setAppraisalId(data.existing.id);
       setStatus(data.existing.status);
