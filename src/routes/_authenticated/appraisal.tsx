@@ -562,13 +562,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
+function canRoleSign(
+  slot: "governor" | "cec" | "chief_officer" | "director",
+  myRoles: AppRole[] | undefined,
+  signoffs: CycleSignoffs,
+): boolean {
+  const order: Array<keyof CycleSignoffs> = ["governor", "cec", "chief_officer", "director"];
+  const idx = order.indexOf(slot);
+  // Sequential gate: previous slots must be signed
+  for (let i = 0; i < idx; i++) {
+    if (!signoffs[order[i]]?.signed_at) return false;
+  }
+  return !!myRoles?.includes(slot as AppRole);
+}
+
+function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName, canSign, requiredRoleLabel }: {
   label: string;
   slot: keyof CycleSignoffs;
   signoffs: CycleSignoffs;
   onSign: (slot: keyof CycleSignoffs, name: string) => void;
   disabled?: boolean;
   fixedName?: string;
+  canSign: boolean;
+  requiredRoleLabel: string;
 }) {
   const [name, setName] = useState(fixedName ?? "");
   const sig = signoffs[slot];
@@ -580,11 +596,15 @@ function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
           <div className="font-display text-sm font-bold italic text-primary">{sig.name}</div>
           <div className="text-[10px] text-muted-foreground">Signed {new Date(sig.signed_at).toLocaleDateString()}</div>
         </div>
+      ) : !canSign ? (
+        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Lock className="h-3 w-3" /> Awaiting {requiredRoleLabel}
+        </div>
       ) : (
         <div className="mt-1.5 space-y-1.5">
-          <Input className="h-8 text-xs" placeholder="Name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
+          <Input className="h-8 text-xs" placeholder="Full name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
           <Button size="sm" variant="outline" className="h-7 w-full text-xs" disabled={disabled} onClick={() => onSign(slot, name)}>
-            <FileSignature className="mr-1 h-3 w-3" /> Sign
+            <FileSignature className="mr-1 h-3 w-3" /> Sign as {requiredRoleLabel}
           </Button>
         </div>
       )}
