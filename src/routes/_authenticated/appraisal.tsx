@@ -434,20 +434,30 @@ function AppraisalPage() {
 
           <div className="mt-5">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Authorisation chain</div>
+            <p className="mt-1 text-[11px] text-muted-foreground">Each tier may only sign in sequence and only by a user holding that role.</p>
             <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("governor", myRoles, signoffs)} requiredRoleLabel="Governor" />
+              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("cec", myRoles, signoffs)} requiredRoleLabel="CEC" />
+              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("chief_officer", myRoles, signoffs)} requiredRoleLabel="Chief Officer" />
+              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("director", myRoles, signoffs)} requiredRoleLabel="Director" />
             </div>
           </div>
 
           <div className="mt-6">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Individual endorsement chain</div>
             <div className="mt-2 grid gap-3 sm:grid-cols-3">
-              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked} fixedName={profile?.full_name ?? undefined} />
-              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                fixedName={profile?.full_name ?? undefined} canSign={true} requiredRoleLabel="Appraisee" />
+              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={!!signoffs.appraisee?.signed_at && (user.id === supervisorId || (myRoles?.includes("director") ?? false))}
+                requiredRoleLabel="Assigned supervisor (or Director in your directorate)" />
+              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={!!signoffs.supervisor?.signed_at && (myRoles?.includes("director") ?? false)}
+                requiredRoleLabel="Director" />
             </div>
           </div>
         </Card>
