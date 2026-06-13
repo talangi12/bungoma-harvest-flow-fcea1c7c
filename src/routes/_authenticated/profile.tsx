@@ -91,14 +91,6 @@ function ProfilePage() {
       setSaving(false);
     }
   }
-      toast.success("Profile updated");
-      qc.invalidateQueries({ queryKey: ["profile-edit", user.id] });
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  }
 
   async function uploadPhoto(file: File) {
     if (file.size > 3 * 1024 * 1024) return toast.error("Photo must be 3MB or smaller");
