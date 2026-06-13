@@ -479,7 +479,7 @@ function AppraisalPage() {
               <Button variant="outline" onClick={() => saveAll(false)} disabled={saving || locked}>
                 <Save className="mr-1.5 h-4 w-4" /> Save draft
               </Button>
-              <Button onClick={() => saveAll(true)} disabled={saving || locked || totals.weight !== 100 || !supervisorId}>
+              <Button onClick={() => saveAll(true)} disabled={saving || locked || totals.weight !== 100 || !supervisorId || !data?.cycleActive}>
                 <Send className="mr-1.5 h-4 w-4" /> Submit to supervisor
               </Button>
             </div>
