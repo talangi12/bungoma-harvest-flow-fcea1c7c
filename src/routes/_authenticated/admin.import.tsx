@@ -60,8 +60,23 @@ function ImportPage() {
   const [targetRole, setTargetRole] = useState<typeof TARGET_ROLES[number]["value"]>("employee");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Awaited<ReturnType<typeof bulkImportEmployees>> | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => parseCSV(csv), [csv]);
+
+  function onFile(file: File) {
+    if (!/\.csv$/i.test(file.name)) return toast.error("Please choose a .csv file");
+    if (file.size > 5 * 1024 * 1024) return toast.error("CSV must be 5MB or smaller");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result ?? "");
+      setCsv(text);
+      const parsed = parseCSV(text);
+      toast.success(`Loaded ${parsed.length} row${parsed.length === 1 ? "" : "s"} from ${file.name}`);
+    };
+    reader.onerror = () => toast.error("Could not read file");
+    reader.readAsText(file);
+  }
 
   async function submit() {
     if (rows.length === 0) return toast.error("No rows parsed. Use the CSV template.");
