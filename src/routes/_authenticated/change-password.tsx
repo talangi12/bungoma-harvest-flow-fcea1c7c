@@ -31,7 +31,10 @@ function ChangePasswordPage() {
     try {
       await changeFn({ data: { new_password: pwd } });
       toast.success("Password updated.");
-      navigate({ to: "/dashboard", replace: true });
+      const { data: rr } = await import("@/integrations/supabase/client").then(m => m.supabase.from("user_roles").select("role").eq("user_id", user.id));
+      const adminRoles = new Set(["super_admin","system_admin","hr","governor","cec","chief_officer","director"]);
+      const dest = (rr ?? []).some((r: { role: string }) => adminRoles.has(r.role)) ? "/admin" : "/dashboard";
+      navigate({ to: dest, replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed");
     } finally {
