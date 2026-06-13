@@ -60,7 +60,14 @@ function AuthPage() {
         toast.info("Please set a new password to continue.");
         navigate({ to: "/change-password", replace: true });
       } else {
-        navigate({ to: "/dashboard", replace: true });
+        const uid = signed.user?.id;
+        let dest: "/admin" | "/dashboard" = "/dashboard";
+        if (uid) {
+          const { data: rr } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+          const adminRoles = new Set(["super_admin","system_admin","hr","governor","cec","chief_officer","director"]);
+          if ((rr ?? []).some((r) => adminRoles.has(r.role as string))) dest = "/admin";
+        }
+        navigate({ to: dest, replace: true });
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Sign in failed. Check your ID Number and Personal Number.";
