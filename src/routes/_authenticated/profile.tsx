@@ -76,19 +76,21 @@ function ProfilePage() {
   async function save() {
     setSaving(true);
     try {
+      // Appraisees may only update their department & work station.
+      // All other employment details are auto-generated from the import record.
       const { error } = await supabase.from("profiles").update({
-        full_name: form.full_name,
-        phone: form.phone || null,
-        designation: form.designation || null,
-        job_group: form.job_group || null,
         department: form.department || null,
-        directorate: form.directorate || null,
         work_station: form.work_station || null,
-        employee_no: form.employee_no || null,
-        national_id: form.national_id || null,
-        employment_date: form.employment_date || null,
       }).eq("id", user.id);
       if (error) throw error;
+      toast.success("Profile updated");
+      qc.invalidateQueries({ queryKey: ["profile-edit", user.id] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
       toast.success("Profile updated");
       qc.invalidateQueries({ queryKey: ["profile-edit", user.id] });
     } catch (e) {
