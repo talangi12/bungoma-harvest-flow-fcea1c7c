@@ -61,6 +61,7 @@ function AppraisalPage() {
   const [saving, setSaving] = useState(false);
   const [selfCommitments, setSelfCommitments] = useState("");
   const [signoffs, setSignoffs] = useState<CycleSignoffs>({});
+  const { data: myRoles } = useRoles(user.id);
 
   const { data, isLoading } = useQuery({
     queryKey: ["appraisal", user.id],
@@ -73,7 +74,16 @@ function AppraisalPage() {
         .eq("period", period)
         .maybeSingle();
       const { data: sups } = await supabase.rpc("list_supervisors");
-      return { profile: prof, existing, supervisors: (sups ?? []) as Array<{ id: string; full_name: string; designation: string | null; department: string | null }> };
+      const dept = prof?.department ?? "";
+      const { data: cycleActive } = dept
+        ? await supabase.rpc("cycle_active_for_dept", { _dept: dept })
+        : { data: null };
+      return {
+        profile: prof,
+        existing,
+        supervisors: (sups ?? []) as Array<{ id: string; full_name: string; designation: string | null; department: string | null }>,
+        cycleActive: cycleActive === true,
+      };
     },
   });
 
