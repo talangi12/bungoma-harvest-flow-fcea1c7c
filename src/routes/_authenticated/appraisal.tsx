@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
-import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel } from "lucide-react";
+import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateAppraisalPdf, getAppraisalPdfUrl } from "@/lib/pdf.functions";
 import { Link } from "@tanstack/react-router";
+import { useRoles, type AppRole } from "@/hooks/useRoles";
 
 export const Route = createFileRoute("/_authenticated/appraisal")({
   head: () => ({ meta: [{ title: "My Appraisal — Bungoma EPMS" }] }),
