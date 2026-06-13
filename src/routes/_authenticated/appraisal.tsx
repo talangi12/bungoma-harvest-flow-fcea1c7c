@@ -238,6 +238,30 @@ function AppraisalPage() {
           </div>
         </div>
 
+        {/* Cycle activation banner */}
+        {data && !data.cycleActive && (
+          <div className="mt-6 rounded-lg border border-gold/50 bg-gold/10 p-4">
+            <div className="flex items-start gap-2">
+              <ShieldAlert className="mt-0.5 h-4 w-4 text-gold-foreground" />
+              <div className="text-sm">
+                <div className="font-semibold">Appraisal cycle not yet active for {profile?.department || "your department"}</div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  The cycle becomes active once the Governor signs and your Chief Officer, Director and Supervisor endorse the cycle for your department. You can draft your targets, but submission is locked until activation completes.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {data && data.cycleActive && status === "draft" && (
+          <div className="mt-6 rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm">
+            <div className="flex items-center gap-2 text-primary">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="font-semibold">Cycle active for {profile?.department}</span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">You may submit your targets to your supervisor for approval.</p>
+          </div>
+        )}
+
         {/* Status banners */}
         {status === "rejected" && rejectionReason && (
           <div className="mt-6 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
