@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
-import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel } from "lucide-react";
+import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateAppraisalPdf, getAppraisalPdfUrl } from "@/lib/pdf.functions";
 import { Link } from "@tanstack/react-router";
+import { useRoles, type AppRole } from "@/hooks/useRoles";
 
 export const Route = createFileRoute("/_authenticated/appraisal")({
   head: () => ({ meta: [{ title: "My Appraisal — Bungoma EPMS" }] }),
@@ -60,6 +61,7 @@ function AppraisalPage() {
   const [saving, setSaving] = useState(false);
   const [selfCommitments, setSelfCommitments] = useState("");
   const [signoffs, setSignoffs] = useState<CycleSignoffs>({});
+  const { data: myRoles } = useRoles(user.id);
 
   const { data, isLoading } = useQuery({
     queryKey: ["appraisal", user.id],
@@ -72,7 +74,16 @@ function AppraisalPage() {
         .eq("period", period)
         .maybeSingle();
       const { data: sups } = await supabase.rpc("list_supervisors");
-      return { profile: prof, existing, supervisors: (sups ?? []) as Array<{ id: string; full_name: string; designation: string | null; department: string | null }> };
+      const dept = prof?.department ?? "";
+      const { data: cycleActive } = dept
+        ? await supabase.rpc("cycle_active_for_dept", { _dept: dept })
+        : { data: null };
+      return {
+        profile: prof,
+        existing,
+        supervisors: (sups ?? []) as Array<{ id: string; full_name: string; designation: string | null; department: string | null }>,
+        cycleActive: cycleActive === true,
+      };
     },
   });
 
@@ -226,6 +237,30 @@ function AppraisalPage() {
             <RatingBadge rating={totals.rating ?? undefined} score={totals.pct ?? undefined} />
           </div>
         </div>
+
+        {/* Cycle activation banner */}
+        {data && !data.cycleActive && (
+          <div className="mt-6 rounded-lg border border-gold/50 bg-gold/10 p-4">
+            <div className="flex items-start gap-2">
+              <ShieldAlert className="mt-0.5 h-4 w-4 text-gold-foreground" />
+              <div className="text-sm">
+                <div className="font-semibold">Appraisal cycle not yet active for {profile?.department || "your department"}</div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  The cycle becomes active once the Governor signs and your Chief Officer, Director and Supervisor endorse the cycle for your department. You can draft your targets, but submission is locked until activation completes.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        {data && data.cycleActive && status === "draft" && (
+          <div className="mt-6 rounded-lg border border-primary/40 bg-primary/5 p-4 text-sm">
+            <div className="flex items-center gap-2 text-primary">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="font-semibold">Cycle active for {profile?.department}</span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">You may submit your targets to your supervisor for approval.</p>
+          </div>
+        )}
 
         {/* Status banners */}
         {status === "rejected" && rejectionReason && (
@@ -399,20 +434,30 @@ function AppraisalPage() {
 
           <div className="mt-5">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Authorisation chain</div>
+            <p className="mt-1 text-[11px] text-muted-foreground">Each tier may only sign in sequence and only by a user holding that role.</p>
             <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Governor" slot="governor" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("governor", myRoles, signoffs)} requiredRoleLabel="Governor" />
+              <SignSlot label="CECs" slot="cec" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("cec", myRoles, signoffs)} requiredRoleLabel="CEC" />
+              <SignSlot label="Chief Officer" slot="chief_officer" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("chief_officer", myRoles, signoffs)} requiredRoleLabel="Chief Officer" />
+              <SignSlot label="Director" slot="director" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={canRoleSign("director", myRoles, signoffs)} requiredRoleLabel="Director" />
             </div>
           </div>
 
           <div className="mt-6">
             <div className="text-xs font-semibold uppercase tracking-wider text-primary">Individual endorsement chain</div>
             <div className="mt-2 grid gap-3 sm:grid-cols-3">
-              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked} fixedName={profile?.full_name ?? undefined} />
-              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
-              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked} />
+              <SignSlot label="Appraisee" slot="appraisee" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                fixedName={profile?.full_name ?? undefined} canSign={true} requiredRoleLabel="Appraisee" />
+              <SignSlot label="Supervisor" slot="supervisor" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={!!signoffs.appraisee?.signed_at && (user.id === supervisorId || (myRoles?.includes("director") ?? false))}
+                requiredRoleLabel="Assigned supervisor (or Director in your directorate)" />
+              <SignSlot label="Director" slot="director_endorsement" signoffs={signoffs} onSign={recordSignoff} disabled={locked}
+                canSign={!!signoffs.supervisor?.signed_at && (myRoles?.includes("director") ?? false)}
+                requiredRoleLabel="Director" />
             </div>
           </div>
         </Card>
@@ -444,7 +489,7 @@ function AppraisalPage() {
               <Button variant="outline" onClick={() => saveAll(false)} disabled={saving || locked}>
                 <Save className="mr-1.5 h-4 w-4" /> Save draft
               </Button>
-              <Button onClick={() => saveAll(true)} disabled={saving || locked || totals.weight !== 100 || !supervisorId}>
+              <Button onClick={() => saveAll(true)} disabled={saving || locked || totals.weight !== 100 || !supervisorId || !data?.cycleActive}>
                 <Send className="mr-1.5 h-4 w-4" /> Submit to supervisor
               </Button>
             </div>
@@ -517,13 +562,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
+function canRoleSign(
+  slot: "governor" | "cec" | "chief_officer" | "director",
+  myRoles: AppRole[] | undefined,
+  signoffs: CycleSignoffs,
+): boolean {
+  const order: Array<keyof CycleSignoffs> = ["governor", "cec", "chief_officer", "director"];
+  const idx = order.indexOf(slot);
+  // Sequential gate: previous slots must be signed
+  for (let i = 0; i < idx; i++) {
+    if (!signoffs[order[i]]?.signed_at) return false;
+  }
+  return !!myRoles?.includes(slot as AppRole);
+}
+
+function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName, canSign, requiredRoleLabel }: {
   label: string;
   slot: keyof CycleSignoffs;
   signoffs: CycleSignoffs;
   onSign: (slot: keyof CycleSignoffs, name: string) => void;
   disabled?: boolean;
   fixedName?: string;
+  canSign: boolean;
+  requiredRoleLabel: string;
 }) {
   const [name, setName] = useState(fixedName ?? "");
   const sig = signoffs[slot];
@@ -535,11 +596,15 @@ function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName }: {
           <div className="font-display text-sm font-bold italic text-primary">{sig.name}</div>
           <div className="text-[10px] text-muted-foreground">Signed {new Date(sig.signed_at).toLocaleDateString()}</div>
         </div>
+      ) : !canSign ? (
+        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Lock className="h-3 w-3" /> Awaiting {requiredRoleLabel}
+        </div>
       ) : (
         <div className="mt-1.5 space-y-1.5">
-          <Input className="h-8 text-xs" placeholder="Name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
+          <Input className="h-8 text-xs" placeholder="Full name" value={name} disabled={disabled} onChange={(e) => setName(e.target.value)} />
           <Button size="sm" variant="outline" className="h-7 w-full text-xs" disabled={disabled} onClick={() => onSign(slot, name)}>
-            <FileSignature className="mr-1 h-3 w-3" /> Sign
+            <FileSignature className="mr-1 h-3 w-3" /> Sign as {requiredRoleLabel}
           </Button>
         </div>
       )}

@@ -76,17 +76,11 @@ function ProfilePage() {
   async function save() {
     setSaving(true);
     try {
+      // Appraisees may only update their department & work station.
+      // All other employment details are auto-generated from the import record.
       const { error } = await supabase.from("profiles").update({
-        full_name: form.full_name,
-        phone: form.phone || null,
-        designation: form.designation || null,
-        job_group: form.job_group || null,
         department: form.department || null,
-        directorate: form.directorate || null,
         work_station: form.work_station || null,
-        employee_no: form.employee_no || null,
-        national_id: form.national_id || null,
-        employment_date: form.employment_date || null,
       }).eq("id", user.id);
       if (error) throw error;
       toast.success("Profile updated");
@@ -153,20 +147,23 @@ function ProfilePage() {
 
         <Card className="mt-6 p-6">
           <h2 className="font-display text-lg font-bold">Employment details</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Your record was generated automatically from the official import. Only your <strong>Department</strong> and <strong>Work station</strong> can be updated here — the rest is permanent and managed by HR.
+          </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <F label="Full name"><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></F>
-            <F label="National ID"><Input value={form.national_id} onChange={(e) => setForm({ ...form, national_id: e.target.value })} /></F>
-            <F label="Personal / Employee number"><Input value={form.employee_no} onChange={(e) => setForm({ ...form, employee_no: e.target.value })} /></F>
-            <F label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></F>
-            <F label="Designation"><Input value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} /></F>
-            <F label="Job group"><Input value={form.job_group} onChange={(e) => setForm({ ...form, job_group: e.target.value })} placeholder="e.g. K" /></F>
-            <F label="Department"><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></F>
-            <F label="Directorate"><Input value={form.directorate} onChange={(e) => setForm({ ...form, directorate: e.target.value })} /></F>
-            <F label="Work station"><Input value={form.work_station} onChange={(e) => setForm({ ...form, work_station: e.target.value })} /></F>
-            <F label="Date of employment"><Input type="date" value={form.employment_date} onChange={(e) => setForm({ ...form, employment_date: e.target.value })} /></F>
+            <F label="Full name"><Input value={form.full_name} readOnly disabled /></F>
+            <F label="National ID"><Input value={form.national_id} readOnly disabled /></F>
+            <F label="Personal / Employee number"><Input value={form.employee_no} readOnly disabled /></F>
+            <F label="Phone"><Input value={form.phone} readOnly disabled /></F>
+            <F label="Designation"><Input value={form.designation} readOnly disabled /></F>
+            <F label="Job group"><Input value={form.job_group} readOnly disabled placeholder="e.g. K" /></F>
+            <F label="Department (editable)"><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></F>
+            <F label="Directorate"><Input value={form.directorate} readOnly disabled /></F>
+            <F label="Work station (editable)"><Input value={form.work_station} onChange={(e) => setForm({ ...form, work_station: e.target.value })} /></F>
+            <F label="Date of employment"><Input type="date" value={form.employment_date} readOnly disabled /></F>
           </div>
           <div className="mt-6 flex justify-end">
-            <Button onClick={save} disabled={saving}><Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save changes"}</Button>
+            <Button onClick={save} disabled={saving}><Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save department & work station"}</Button>
           </div>
         </Card>
       </main>

@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -61,8 +60,23 @@ function ImportPage() {
   const [targetRole, setTargetRole] = useState<typeof TARGET_ROLES[number]["value"]>("employee");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Awaited<ReturnType<typeof bulkImportEmployees>> | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const rows = useMemo(() => parseCSV(csv), [csv]);
+
+  function onFile(file: File) {
+    if (!/\.csv$/i.test(file.name)) return toast.error("Please choose a .csv file");
+    if (file.size > 5 * 1024 * 1024) return toast.error("CSV must be 5MB or smaller");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result ?? "");
+      setCsv(text);
+      const parsed = parseCSV(text);
+      toast.success(`Loaded ${parsed.length} row${parsed.length === 1 ? "" : "s"} from ${file.name}`);
+    };
+    reader.onerror = () => toast.error("Could not read file");
+    reader.readAsText(file);
+  }
 
   async function submit() {
     if (rows.length === 0) return toast.error("No rows parsed. Use the CSV template.");
@@ -107,9 +121,17 @@ function ImportPage() {
 
         <Card className="mt-6 p-5">
           <h2 className="font-display text-sm font-bold flex items-center gap-2"><FileSpreadsheet className="h-4 w-4 text-primary" /> CSV template</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Paste rows below. The first row must be the header.</p>
+          <p className="mt-1 text-xs text-muted-foreground">First row must be the header. Download / copy the template, fill in the rows in Excel, save as CSV, then upload below.</p>
           <pre className="mt-2 rounded-md border border-border bg-muted/30 p-3 text-[10px] overflow-x-auto">{TEMPLATE}</pre>
-          <Button size="sm" variant="outline" className="mt-2" onClick={() => navigator.clipboard.writeText(TEMPLATE)}>Copy template</Button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(TEMPLATE)}>Copy template</Button>
+            <Button size="sm" variant="outline" onClick={() => {
+              const blob = new Blob([TEMPLATE], { type: "text/csv" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a"); a.href = url; a.download = "epms-import-template.csv"; a.click();
+              URL.revokeObjectURL(url);
+            }}>Download template</Button>
+          </div>
         </Card>
 
         <Card className="mt-6 p-5">
@@ -124,14 +146,28 @@ function ImportPage() {
               <Badge variant="secondary">Parsed rows: {rows.length}</Badge>
             </div>
           </div>
+
           <div className="mt-4">
-            <Label htmlFor="csv">CSV rows</Label>
-            <Textarea id="csv" rows={10} value={csv} onChange={(e) => setCsv(e.target.value)} placeholder={TEMPLATE} className="font-mono text-xs" />
+            <Label>Upload CSV file</Label>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
+              <Button variant="outline" onClick={() => fileRef.current?.click()}>
+                <UploadCloud className="mr-1.5 h-4 w-4" /> Choose CSV file
+              </Button>
+              {csv && <Button variant="ghost" size="sm" onClick={() => { setCsv(""); if (fileRef.current) fileRef.current.value = ""; }}>Clear</Button>}
+            </div>
+            <p className="mt-1 text-[10px] text-muted-foreground">.csv only · max 5MB · imported records are inserted into the database immediately and become available to the appraisee.</p>
+          </div>
+
+          <div className="mt-4">
+            <Label htmlFor="csv">Or paste CSV rows</Label>
+            <Textarea id="csv" rows={8} value={csv} onChange={(e) => setCsv(e.target.value)} placeholder={TEMPLATE} className="font-mono text-xs" />
           </div>
           <div className="mt-4 flex justify-end">
             <Button disabled={busy || rows.length === 0} onClick={submit}>{busy ? "Importing…" : `Import ${rows.length} record${rows.length === 1 ? "" : "s"}`}</Button>
           </div>
         </Card>
+
 
         {result && (
           <Card className="mt-6 p-5">
