@@ -166,6 +166,8 @@ function ProfilePage() {
             <F label="Directorate"><Input value={form.directorate} readOnly disabled /></F>
             <F label="Work station (editable)"><Input value={form.work_station} onChange={(e) => setForm({ ...form, work_station: e.target.value })} /></F>
             <F label="Date of employment"><Input type="date" value={form.employment_date} readOnly disabled /></F>
+            <F label="Gender"><Input value={form.gender} readOnly disabled /></F>
+            <F label="Disability status"><Input value={form.disability_status} readOnly disabled /></F>
           </div>
           <div className="mt-6 flex justify-end">
             <Button onClick={save} disabled={saving}><Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save department & work station"}</Button>
