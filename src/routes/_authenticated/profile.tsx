@@ -67,6 +67,8 @@ function ProfilePage() {
       employee_no: data.employee_no ?? "",
       national_id: data.national_id ?? "",
       employment_date: data.employment_date ?? "",
+      gender: (data as { gender?: string | null }).gender ?? "",
+      disability_status: (data as { disability_status?: string | null }).disability_status ?? "",
     });
     if (data.photo_url) {
       // photo_url stored as storage path "userId/filename"
