@@ -62,7 +62,7 @@ export const bootstrapDefaultSuperAdmin = createServerFn({ method: "POST" })
         personal_number: password,
         designation: "System Administrator",
         department: "Administration",
-        must_change_password: true,
+        must_change_password: false,
       },
     });
     if (error) throw new Error(error.message);
