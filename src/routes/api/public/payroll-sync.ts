@@ -139,8 +139,6 @@ export const Route = createFileRoute("/api/public/payroll-sync")({
           }).eq("id", userId);
         }
 
-        // Suppress unused-var warning from listUsers placeholder above
-        void list_;
         return new Response(JSON.stringify({ ok: true, created, updated, failed, errors }), {
           status: 200, headers: { "content-type": "application/json" },
         });
@@ -149,5 +147,3 @@ export const Route = createFileRoute("/api/public/payroll-sync")({
   },
 });
 
-// (no-op marker)
-const list_ = null;
