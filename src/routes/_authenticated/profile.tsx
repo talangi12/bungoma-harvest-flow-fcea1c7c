@@ -26,12 +26,15 @@ type Editable = {
   employee_no: string;
   national_id: string;
   employment_date: string;
+  gender: string;
+  disability_status: string;
 };
 
 const EMPTY: Editable = {
   full_name: "", phone: "", designation: "", job_group: "",
   department: "", directorate: "", work_station: "",
   employee_no: "", national_id: "", employment_date: "",
+  gender: "", disability_status: "",
 };
 
 function ProfilePage() {
@@ -64,6 +67,8 @@ function ProfilePage() {
       employee_no: data.employee_no ?? "",
       national_id: data.national_id ?? "",
       employment_date: data.employment_date ?? "",
+      gender: (data as { gender?: string | null }).gender ?? "",
+      disability_status: (data as { disability_status?: string | null }).disability_status ?? "",
     });
     if (data.photo_url) {
       // photo_url stored as storage path "userId/filename"
@@ -161,6 +166,8 @@ function ProfilePage() {
             <F label="Directorate"><Input value={form.directorate} readOnly disabled /></F>
             <F label="Work station (editable)"><Input value={form.work_station} onChange={(e) => setForm({ ...form, work_station: e.target.value })} /></F>
             <F label="Date of employment"><Input type="date" value={form.employment_date} readOnly disabled /></F>
+            <F label="Gender"><Input value={form.gender} readOnly disabled /></F>
+            <F label="Disability status"><Input value={form.disability_status} readOnly disabled /></F>
           </div>
           <div className="mt-6 flex justify-end">
             <Button onClick={save} disabled={saving}><Save className="mr-1.5 h-4 w-4" /> {saving ? "Saving…" : "Save department & work station"}</Button>

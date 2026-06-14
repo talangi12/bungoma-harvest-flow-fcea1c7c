@@ -23,6 +23,7 @@ import { Route as AuthenticatedChangePasswordRouteImport } from './routes/_authe
 import { Route as AuthenticatedAppraisalRouteImport } from './routes/_authenticated/appraisal'
 import { Route as AuthenticatedAppealsRouteImport } from './routes/_authenticated/appeals'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as ApiPublicPayrollSyncRouteImport } from './routes/api/public/payroll-sync'
 import { Route as ApiPublicBootstrapSuper26RouteImport } from './routes/api/public/bootstrap-super26'
 import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_authenticated/supervisor.inbox'
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
@@ -104,6 +105,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicPayrollSyncRoute = ApiPublicPayrollSyncRouteImport.update({
+  id: '/api/public/payroll-sync',
+  path: '/api/public/payroll-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicBootstrapSuper26Route =
   ApiPublicBootstrapSuper26RouteImport.update({
     id: '/api/public/bootstrap-super26',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
   '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
+  '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
   '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
+  '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/_authenticated/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
   '/api/public/bootstrap-super26': typeof ApiPublicBootstrapSuper26Route
+  '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
 }
@@ -263,6 +272,7 @@ export interface FileRouteTypes {
     | '/committee/appeals'
     | '/supervisor/inbox'
     | '/api/public/bootstrap-super26'
+    | '/api/public/payroll-sync'
     | '/admin/'
     | '/supervisor/review/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/committee/appeals'
     | '/supervisor/inbox'
     | '/api/public/bootstrap-super26'
+    | '/api/public/payroll-sync'
     | '/admin'
     | '/supervisor/review/$id'
   id:
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/committee/appeals'
     | '/_authenticated/supervisor/inbox'
     | '/api/public/bootstrap-super26'
+    | '/api/public/payroll-sync'
     | '/_authenticated/admin/'
     | '/_authenticated/supervisor/review/$id'
   fileRoutesById: FileRoutesById
@@ -324,6 +336,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiPublicBootstrapSuper26Route: typeof ApiPublicBootstrapSuper26Route
+  ApiPublicPayrollSyncRoute: typeof ApiPublicPayrollSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/payroll-sync': {
+      id: '/api/public/payroll-sync'
+      path: '/api/public/payroll-sync'
+      fullPath: '/api/public/payroll-sync'
+      preLoaderRoute: typeof ApiPublicPayrollSyncRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/bootstrap-super26': {
       id: '/api/public/bootstrap-super26'
@@ -552,6 +572,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiPublicBootstrapSuper26Route: ApiPublicBootstrapSuper26Route,
+  ApiPublicPayrollSyncRoute: ApiPublicPayrollSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

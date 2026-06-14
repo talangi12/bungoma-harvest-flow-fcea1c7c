@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,6 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const navigate = useNavigate();
   const [idNumber, setIdNumber] = useState("");
   const [personalNumber, setPersonalNumber] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,12 +24,21 @@ function AuthPage() {
   const bootstrapFn = useServerFn(bootstrapDefaultSuperAdmin);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/dashboard", replace: true });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      window.location.href = await resolveDest(data.user.id);
     });
-    // Fire-and-forget bootstrap of the default super admin once on this page load
     bootstrapFn({}).catch(() => {});
-  }, [navigate, bootstrapFn]);
+  }, [bootstrapFn]);
+
+  async function resolveDest(uid: string): Promise<string> {
+    try {
+      const { data: rr } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      const adminRoles = new Set(["super_admin","system_admin","hr","governor","cec","chief_officer","director","appeals_committee"]);
+      if ((rr ?? []).some((r) => adminRoles.has(r.role as string))) return "/admin";
+    } catch { /* ignore */ }
+    return "/dashboard";
+  }
 
   async function recordEvent(success: boolean, userId: string | null, email: string | null, reason?: string) {
     try {
@@ -49,26 +57,16 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { email, must_change_password } = await resolveFn({ data: { id_number: idNumber.trim() } });
+      const { email } = await resolveFn({ data: { id_number: idNumber.trim() } });
       const { data: signed, error } = await supabase.auth.signInWithPassword({ email, password: personalNumber });
       if (error) {
         await recordEvent(false, null, email, error.message);
         throw error;
       }
       await recordEvent(true, signed.user?.id ?? null, email);
-      if (must_change_password) {
-        toast.info("Please set a new password to continue.");
-        navigate({ to: "/change-password", replace: true });
-      } else {
-        const uid = signed.user?.id;
-        let dest: "/admin" | "/dashboard" = "/dashboard";
-        if (uid) {
-          const { data: rr } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-          const adminRoles = new Set(["super_admin","system_admin","hr","governor","cec","chief_officer","director"]);
-          if ((rr ?? []).some((r) => adminRoles.has(r.role as string))) dest = "/admin";
-        }
-        navigate({ to: dest, replace: true });
-      }
+      const dest = signed.user ? await resolveDest(signed.user.id) : "/dashboard";
+      // Hard navigation guarantees the protected layout sees the fresh session.
+      window.location.href = dest;
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Sign in failed. Check your ID Number and Personal Number.";
       toast.error(msg);
