@@ -26,12 +26,15 @@ type Editable = {
   employee_no: string;
   national_id: string;
   employment_date: string;
+  gender: string;
+  disability_status: string;
 };
 
 const EMPTY: Editable = {
   full_name: "", phone: "", designation: "", job_group: "",
   department: "", directorate: "", work_station: "",
   employee_no: "", national_id: "", employment_date: "",
+  gender: "", disability_status: "",
 };
 
 function ProfilePage() {
