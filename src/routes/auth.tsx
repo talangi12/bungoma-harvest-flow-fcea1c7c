@@ -18,7 +18,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const [idNumber, setIdNumber] = useState("");
-  const [idNumber, setIdNumber] = useState("");
   const [personalNumber, setPersonalNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const resolveFn = useServerFn(resolveLoginEmail);
