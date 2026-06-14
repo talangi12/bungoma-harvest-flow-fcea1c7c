@@ -91,10 +91,8 @@ export const Route = createFileRoute("/api/public/payroll-sync")({
           const email = r.email?.trim().toLowerCase() || `id_${r.id_number.toLowerCase()}@epms.bungoma.local`;
           const password = r.personal_number || r.id_number;
 
-          // Find existing auth user by synthetic / provided email
-          const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 });
+          // Look up existing profile by id_number
           let userId: string | undefined;
-          // Look up profile by id_number first (cheaper than full listUsers scan)
           const { data: existingProfile } = await supabaseAdmin
             .from("profiles").select("id").eq("id_number", r.id_number).maybeSingle();
           userId = existingProfile?.id;
