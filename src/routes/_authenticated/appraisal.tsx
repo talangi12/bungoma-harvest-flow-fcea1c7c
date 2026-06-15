@@ -11,9 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
-import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock } from "lucide-react";
+import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock, Sparkles } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateAppraisalPdf, getAppraisalPdfUrl } from "@/lib/pdf.functions";
+import { generateAppraisalReport, getLatestAppraisalReport } from "@/lib/ai-report.functions";
 import { Link } from "@tanstack/react-router";
 import { useRoles, type AppRole } from "@/hooks/useRoles";
 
@@ -477,6 +478,9 @@ function AppraisalPage() {
           </div>
         </Card>
 
+        {/* Final appraisal report (AI) */}
+        <FinalReport appraisalId={appraisalId} signoffs={signoffs} />
+
         {/* Sticky action bar */}
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -612,3 +616,56 @@ function SignSlot({ label, slot, signoffs, onSign, disabled, fixedName, canSign,
   );
 }
 
+
+function FinalReport({ appraisalId, signoffs }: { appraisalId: string | null; signoffs: CycleSignoffs }) {
+  const gen = useServerFn(generateAppraisalReport);
+  const get = useServerFn(getLatestAppraisalReport);
+  const [busy, setBusy] = useState(false);
+  const [report, setReport] = useState<{ narrative: string; createdAt: string } | null>(null);
+
+  const required: Array<keyof CycleSignoffs> = ["appraisee", "supervisor", "director_endorsement"];
+  const missing = required.filter((k) => !signoffs[k]?.signed_at);
+  const ready = appraisalId && missing.length === 0;
+
+  useEffect(() => {
+    if (!appraisalId) return;
+    get({ data: { appraisalId } }).then((r) => {
+      if (r) setReport({ narrative: r.narrative, createdAt: r.created_at });
+    }).catch(() => {});
+  }, [appraisalId, get]);
+
+  async function run() {
+    if (!appraisalId) return;
+    setBusy(true);
+    try {
+      const r = await gen({ data: { appraisalId } });
+      setReport({ narrative: r.narrative, createdAt: r.createdAt });
+      toast.success("AI report generated");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <Card className="mt-6 p-6">
+      <SectionHeader number="9" title="Final appraisal report (AI)" />
+      <p className="mt-2 text-sm text-muted-foreground">
+        Generates a government-ready narrative report using Lovable AI (Gemini 3 Flash). Only available once the appraisee, supervisor and director endorsement chain is complete.
+      </p>
+      {!ready ? (
+        <div className="mt-4 flex items-center gap-2 rounded-md border border-dashed border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+          <Lock className="h-4 w-4" /> Awaiting signatures: {missing.join(", ") || "—"}
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button onClick={run} disabled={busy}><Sparkles className="mr-1.5 h-4 w-4" />{busy ? "Generating…" : report ? "Regenerate report" : "Generate AI narrative report"}</Button>
+        </div>
+      )}
+      {report && (
+        <div className="mt-4 rounded-md border border-border bg-muted/20 p-4">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Generated {new Date(report.createdAt).toLocaleString()}</div>
+          <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed">{report.narrative}</pre>
+        </div>
+      )}
+    </Card>
+  );
+}

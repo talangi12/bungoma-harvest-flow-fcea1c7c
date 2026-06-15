@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRoles, hasAnyRole } from "@/hooks/useRoles";
-import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon } from "lucide-react";
+import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon, Database, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Console — Bungoma EPMS" }] }),
@@ -71,8 +71,12 @@ function AdminHome() {
         </div>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <AdminCard to="/admin/import" icon={UploadCloud} title="Hierarchical bulk import"
-            desc="Governor → CECs → Chief Officers → Directors → Employees. Each tier imports the next under strict departmental boundaries." />
+          <AdminCard to="/admin/import" icon={UploadCloud} title="Bulk employee import"
+            desc="Drag-drop CSV or Excel. Pre-import preview, validation report and direct insertion into the database." />
+          <AdminCard to="/admin/sync" icon={Database} title="Payroll synchronization"
+            desc="Schedule daily/weekly sync, run on-demand syncs, and inspect the run history." />
+          <AdminCard to="/admin/org-structure" icon={Building2} title="Organisational structure"
+            desc="Auto-generated hierarchy of directorates → departments → sections → units." />
           <AdminCard to="/search" icon={SearchIcon} title="Employee search"
             desc="Look up any employee by ID Number or Personal Number, scoped by your departmental authority." />
           <AdminCard to="/admin/users" icon={UserPlus} title="Create user account"

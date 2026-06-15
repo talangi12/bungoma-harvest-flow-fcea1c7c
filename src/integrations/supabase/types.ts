@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_reports: {
+        Row: {
+          appraisal_id: string
+          created_at: string
+          generated_by: string | null
+          id: string
+          metrics: Json | null
+          model: string
+          narrative: string
+        }
+        Insert: {
+          appraisal_id: string
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          metrics?: Json | null
+          model: string
+          narrative: string
+        }
+        Update: {
+          appraisal_id?: string
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          metrics?: Json | null
+          model?: string
+          narrative?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_reports_appraisal_id_fkey"
+            columns: ["appraisal_id"]
+            isOneToOne: false
+            referencedRelation: "appraisals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appeals: {
         Row: {
           appellant_id: string
@@ -375,6 +413,39 @@ export type Database = {
         }
         Relationships: []
       }
+      org_units: {
+        Row: {
+          created_at: string
+          department: string
+          directorate: string | null
+          employee_count: number
+          id: string
+          section: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          directorate?: string | null
+          employee_count?: number
+          id?: string
+          section?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          directorate?: string | null
+          employee_count?: number
+          id?: string
+          section?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           chief_officer_id: string | null
@@ -389,6 +460,7 @@ export type Database = {
           employee_no: string | null
           employment_date: string | null
           employment_status: string | null
+          employment_type: string | null
           full_name: string
           gender: string | null
           id: string
@@ -401,7 +473,9 @@ export type Database = {
           personal_number: string | null
           phone: string | null
           photo_url: string | null
+          section: string | null
           supervisor_id: string | null
+          unit: string | null
           updated_at: string
           work_station: string | null
         }
@@ -418,6 +492,7 @@ export type Database = {
           employee_no?: string | null
           employment_date?: string | null
           employment_status?: string | null
+          employment_type?: string | null
           full_name: string
           gender?: string | null
           id: string
@@ -430,7 +505,9 @@ export type Database = {
           personal_number?: string | null
           phone?: string | null
           photo_url?: string | null
+          section?: string | null
           supervisor_id?: string | null
+          unit?: string | null
           updated_at?: string
           work_station?: string | null
         }
@@ -447,6 +524,7 @@ export type Database = {
           employee_no?: string | null
           employment_date?: string | null
           employment_status?: string | null
+          employment_type?: string | null
           full_name?: string
           gender?: string | null
           id?: string
@@ -459,7 +537,9 @@ export type Database = {
           personal_number?: string | null
           phone?: string | null
           photo_url?: string | null
+          section?: string | null
           supervisor_id?: string | null
+          unit?: string | null
           updated_at?: string
           work_station?: string | null
         }
@@ -486,6 +566,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sync_logs: {
+        Row: {
+          created: number
+          details: Json | null
+          errors: number
+          finished_at: string | null
+          id: string
+          processed: number
+          source: string
+          started_at: string
+          status: string
+          updated: number
+        }
+        Insert: {
+          created?: number
+          details?: Json | null
+          errors?: number
+          finished_at?: string | null
+          id?: string
+          processed?: number
+          source: string
+          started_at?: string
+          status: string
+          updated?: number
+        }
+        Update: {
+          created?: number
+          details?: Json | null
+          errors?: number
+          finished_at?: string | null
+          id?: string
+          processed?: number
+          source?: string
+          started_at?: string
+          status?: string
+          updated?: number
+        }
+        Relationships: []
+      }
+      sync_schedule: {
+        Row: {
+          endpoint_url: string | null
+          frequency: string
+          id: number
+          last_run_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          endpoint_url?: string | null
+          frequency?: string
+          id?: number
+          last_run_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          endpoint_url?: string | null
+          frequency?: string
+          id?: number
+          last_run_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       target_quarter_progress: {
         Row: {
