@@ -28,7 +28,9 @@ import { Route as ApiPublicBootstrapSuper26RouteImport } from './routes/api/publ
 import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_authenticated/supervisor.inbox'
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
+import { Route as AuthenticatedAdminOrgStructureRouteImport } from './routes/_authenticated/admin.org-structure'
 import { Route as AuthenticatedAdminLoginAuditRouteImport } from './routes/_authenticated/admin.login-audit'
 import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin.import'
 import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
@@ -133,11 +135,22 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
+  id: '/admin/sync',
+  path: '/admin/sync',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
   id: '/admin/roles',
   path: '/admin/roles',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminOrgStructureRoute =
+  AuthenticatedAdminOrgStructureRouteImport.update({
+    id: '/admin/org-structure',
+    path: '/admin/org-structure',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminLoginAuditRoute =
   AuthenticatedAdminLoginAuditRouteImport.update({
     id: '/admin/login-audit',
@@ -185,7 +198,9 @@ export interface FileRoutesByFullPath {
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
+  '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
@@ -211,7 +226,9 @@ export interface FileRoutesByTo {
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
+  '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
@@ -239,7 +256,9 @@ export interface FileRoutesById {
   '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
+  '/_authenticated/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
   '/_authenticated/supervisor/inbox': typeof AuthenticatedSupervisorInboxRoute
@@ -267,7 +286,9 @@ export interface FileRouteTypes {
     | '/admin/cycles'
     | '/admin/import'
     | '/admin/login-audit'
+    | '/admin/org-structure'
     | '/admin/roles'
+    | '/admin/sync'
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
@@ -293,7 +314,9 @@ export interface FileRouteTypes {
     | '/admin/cycles'
     | '/admin/import'
     | '/admin/login-audit'
+    | '/admin/org-structure'
     | '/admin/roles'
+    | '/admin/sync'
     | '/admin/users'
     | '/committee/appeals'
     | '/supervisor/inbox'
@@ -320,7 +343,9 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/cycles'
     | '/_authenticated/admin/import'
     | '/_authenticated/admin/login-audit'
+    | '/_authenticated/admin/org-structure'
     | '/_authenticated/admin/roles'
+    | '/_authenticated/admin/sync'
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
     | '/_authenticated/supervisor/inbox'
@@ -474,11 +499,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/sync': {
+      id: '/_authenticated/admin/sync'
+      path: '/admin/sync'
+      fullPath: '/admin/sync'
+      preLoaderRoute: typeof AuthenticatedAdminSyncRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/roles': {
       id: '/_authenticated/admin/roles'
       path: '/admin/roles'
       fullPath: '/admin/roles'
       preLoaderRoute: typeof AuthenticatedAdminRolesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/org-structure': {
+      id: '/_authenticated/admin/org-structure'
+      path: '/admin/org-structure'
+      fullPath: '/admin/org-structure'
+      preLoaderRoute: typeof AuthenticatedAdminOrgStructureRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/login-audit': {
@@ -533,7 +572,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
   AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminLoginAuditRoute: typeof AuthenticatedAdminLoginAuditRoute
+  AuthenticatedAdminOrgStructureRoute: typeof AuthenticatedAdminOrgStructureRoute
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
+  AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCommitteeAppealsRoute: typeof AuthenticatedCommitteeAppealsRoute
   AuthenticatedSupervisorInboxRoute: typeof AuthenticatedSupervisorInboxRoute
@@ -555,7 +596,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
   AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminLoginAuditRoute: AuthenticatedAdminLoginAuditRoute,
+  AuthenticatedAdminOrgStructureRoute: AuthenticatedAdminOrgStructureRoute,
   AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
+  AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCommitteeAppealsRoute: AuthenticatedCommitteeAppealsRoute,
   AuthenticatedSupervisorInboxRoute: AuthenticatedSupervisorInboxRoute,
