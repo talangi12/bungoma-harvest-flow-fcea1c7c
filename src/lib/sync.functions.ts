@@ -2,8 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertAdmin(supabase: { rpc: (n: "is_admin_viewer", a: { _uid: string }) => Promise<{ data: unknown }> }, userId: string) {
-  const { data } = await supabase.rpc("is_admin_viewer", { _uid: userId });
+async function assertAdmin(supabase: { rpc: (n: "is_admin_viewer", a: { _uid: string }) => unknown }, userId: string) {
+  const { data } = (await (supabase.rpc("is_admin_viewer", { _uid: userId }) as Promise<{ data: boolean | null }>));
   if (!data) throw new Error("Admin only");
 }
 
