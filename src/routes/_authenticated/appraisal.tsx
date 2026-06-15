@@ -11,9 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
-import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock } from "lucide-react";
+import { Plus, Trash2, FileSignature, Save, Send, AlertCircle, CheckCircle2, FileDown, Gavel, ShieldAlert, Lock, Sparkles } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { generateAppraisalPdf, getAppraisalPdfUrl } from "@/lib/pdf.functions";
+import { generateAppraisalReport, getLatestAppraisalReport } from "@/lib/ai-report.functions";
 import { Link } from "@tanstack/react-router";
 import { useRoles, type AppRole } from "@/hooks/useRoles";
 
@@ -476,6 +477,9 @@ function AppraisalPage() {
             ))}
           </div>
         </Card>
+
+        {/* Final appraisal report (AI) */}
+        <FinalReport appraisalId={appraisalId} signoffs={signoffs} />
 
         {/* Sticky action bar */}
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 backdrop-blur">
