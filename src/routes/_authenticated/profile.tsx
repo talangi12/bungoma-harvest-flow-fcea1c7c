@@ -160,7 +160,7 @@ function ProfilePage() {
             <F label="Full name"><Input value={form.full_name} readOnly disabled /></F>
             <F label="National ID"><Input value={form.national_id} readOnly disabled /></F>
             <F label="Personal / Employee number"><Input value={form.employee_no} readOnly disabled /></F>
-            <F label="Phone"><Input value={form.phone} readOnly disabled /></F>
+            <F label="Phone (used for OTP)"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07XX XXX XXX" /></F>
             <F label="Designation"><Input value={form.designation} readOnly disabled /></F>
             <F label="Job group"><Input value={form.job_group} readOnly disabled placeholder="e.g. K" /></F>
             <F label="Department (editable)"><Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} /></F>
