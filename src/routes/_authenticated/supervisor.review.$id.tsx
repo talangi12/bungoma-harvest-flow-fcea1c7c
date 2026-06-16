@@ -46,7 +46,7 @@ function ReviewAppraisal() {
       });
       for (const tid of keys) {
         const patch = edits[tid];
-        const { error } = await supabase.from("targets").update(patch).eq("id", tid);
+        const { error } = await supabase.from("targets").update(patch as never).eq("id", tid);
         if (error) throw error;
       }
       toast.success("Saved with version snapshot");
