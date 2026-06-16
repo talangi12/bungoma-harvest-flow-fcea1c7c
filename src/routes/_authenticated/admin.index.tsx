@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRoles, hasAnyRole } from "@/hooks/useRoles";
-import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon, Database, Building2 } from "lucide-react";
+import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon, Database, Building2, Activity, FileWarning } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Console — Bungoma EPMS" }] }),
