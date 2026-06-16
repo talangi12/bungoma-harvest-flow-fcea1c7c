@@ -86,7 +86,8 @@ function ProfilePage() {
       const { error } = await supabase.from("profiles").update({
         department: form.department || null,
         work_station: form.work_station || null,
-      }).eq("id", user.id);
+        phone_number: form.phone || null,
+      } as never).eq("id", user.id);
       if (error) throw error;
       toast.success("Profile updated");
       qc.invalidateQueries({ queryKey: ["profile-edit", user.id] });
