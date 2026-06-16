@@ -93,7 +93,7 @@ export const verifyOtp = createServerFn({ method: "POST" })
     if (hashCode(data.code) !== row.code_hash) {
       await supabaseAdmin.from("otp_codes").update({ attempts: row.attempts + 1 }).eq("id", row.id);
       await supabaseAdmin.rpc("log_audit", {
-        _action: "otp_failed", _entity_type: "auth.users", _entity_id: row.user_id,
+        _action: "otp_failed", _entity_type: "auth.users", _entity_id: row.user_id ?? undefined,
         _old: null, _new: { attempt: row.attempts + 1 },
       });
       throw new Error(`Incorrect code. ${row.max_attempts - row.attempts - 1} attempt(s) remaining.`);
@@ -112,7 +112,7 @@ export const verifyOtp = createServerFn({ method: "POST" })
     if (error || !link.properties?.hashed_token) throw new Error(error?.message ?? "Failed to issue session.");
 
     await supabaseAdmin.rpc("log_audit", {
-      _action: "otp_verified", _entity_type: "auth.users", _entity_id: row.user_id, _old: null, _new: null,
+      _action: "otp_verified", _entity_type: "auth.users", _entity_id: row.user_id ?? undefined, _old: null, _new: null,
     });
 
     return { token_hash: link.properties.hashed_token, email: prof.email };
