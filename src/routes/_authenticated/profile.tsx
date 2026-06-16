@@ -58,7 +58,7 @@ function ProfilePage() {
     if (!data) return;
     setForm({
       full_name: data.full_name ?? "",
-      phone: data.phone ?? "",
+      phone: (data as { phone_number?: string | null }).phone_number ?? data.phone ?? "",
       designation: data.designation ?? "",
       job_group: data.job_group ?? "",
       department: data.department ?? "",
