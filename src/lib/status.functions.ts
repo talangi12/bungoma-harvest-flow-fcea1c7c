@@ -33,9 +33,9 @@ export const contractAction = createServerFn({ method: "POST" })
     const { error } = await context.supabase.rpc("contract_action", {
       _employee: data.employee_id,
       _action: data.action,
-      _new_end: (data.new_end_date ?? "") as string,
+      _new_end: data.new_end_date as unknown as string,
       _reason: data.reason,
-    });
+    } as never);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
