@@ -21,7 +21,7 @@ export const requestOtp = createServerFn({ method: "POST" })
     const { data: prof } = await supabaseAdmin
       .from("profiles")
       .select("id, email, phone_number, employee_status, employment_type, contract_end_date, full_name")
-      .eq("id_number", data.id_number)
+      .eq("id_number", data.id_number as string)
       .maybeSingle();
     if (!prof) throw new Error("No employee found with that National ID.");
 
@@ -43,7 +43,7 @@ export const requestOtp = createServerFn({ method: "POST" })
     const { count } = await supabaseAdmin
       .from("otp_codes")
       .select("id", { count: "exact", head: true })
-      .eq("id_number", data.id_number)
+      .eq("id_number", data.id_number as string)
       .gte("created_at", new Date(Date.now() - 10 * 60_000).toISOString());
     if ((count ?? 0) >= 3) throw new Error("Too many OTP requests. Wait 10 minutes.");
 
@@ -81,7 +81,7 @@ export const verifyOtp = createServerFn({ method: "POST" })
     const { data: rows } = await supabaseAdmin
       .from("otp_codes")
       .select("*")
-      .eq("id_number", data.id_number)
+      .eq("id_number", data.id_number as string)
       .is("consumed_at", null)
       .order("created_at", { ascending: false })
       .limit(1);
@@ -102,7 +102,7 @@ export const verifyOtp = createServerFn({ method: "POST" })
     await supabaseAdmin.from("otp_codes").update({ consumed_at: new Date().toISOString() }).eq("id", row.id);
 
     const { data: prof } = await supabaseAdmin
-      .from("profiles").select("email").eq("id_number", data.id_number).maybeSingle();
+      .from("profiles").select("email").eq("id_number", data.id_number as string).maybeSingle();
     if (!prof?.email) throw new Error("Profile email missing.");
 
     const { data: link, error } = await supabaseAdmin.auth.admin.generateLink({
