@@ -108,36 +108,54 @@ function ReviewAppraisal() {
         </div>
       </div>
 
+      <SlaBanner deadline={a.supervisor_deadline} escalatedAt={a.escalated_at} escalatedTo={a.escalated_to} status={a.status} />
+
       <Card className="mt-6 p-6">
-        <h2 className="font-display text-lg font-bold">Performance targets ({targets.length})</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold">Performance targets ({targets.length})</h2>
+          {!isFinal && (
+            <Button size="sm" variant="outline" onClick={() => setEditing((v) => !v)}>{editing ? "Stop editing" : "Edit targets"}</Button>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">Total weight: <span className={totalWeight === 100 ? "text-primary font-semibold" : "text-destructive font-semibold"}>{totalWeight}%</span></p>
         <div className="mt-4 space-y-3">
           {targets.map((t, i) => (
             <div key={t.id} className="rounded-lg border border-border p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="text-xs font-semibold uppercase tracking-wider text-primary">Target {i + 1}</div>
-                <div className="text-right text-xs">
-                  <span className="text-muted-foreground">Weight</span> <span className="font-semibold">{t.weight}%</span>
-                  <span className="ml-3 text-muted-foreground">Score</span> <span className="font-semibold">{t.score ?? 0}</span>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">Weight</span>
+                  {editing ? (
+                    <input type="number" defaultValue={Number(t.weight) || 0} className="w-16 rounded border border-border px-1 text-right" onChange={(e) => updateField(t.id, "weight", Number(e.target.value))} />
+                  ) : <span className="font-semibold">{t.weight}%</span>}
+                  <span className="ml-2 text-muted-foreground">Score</span>
+                  {editing ? (
+                    <input type="number" defaultValue={Number(t.score) || 0} className="w-16 rounded border border-border px-1 text-right" onChange={(e) => updateField(t.id, "score", Number(e.target.value))} />
+                  ) : <span className="font-semibold">{t.score ?? 0}</span>}
                 </div>
               </div>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 <Detail label="Target" value={t.target} />
                 <Detail label="Indicator" value={t.indicator} />
-                <Detail label="Expected outcome" value={t.expected_outcome} />
-                <Detail label="Achieved result" value={t.achieved_result} />
+                <EditableDetail label="Expected outcome" value={t.expected_outcome} editing={editing} onChange={(v) => updateField(t.id, "expected_outcome", v)} />
+                <EditableDetail label="Achieved result" value={t.achieved_result} editing={editing} onChange={(v) => updateField(t.id, "achieved_result", v)} />
               </div>
             </div>
           ))}
         </div>
+        {editing && (
+          <div className="mt-4 flex justify-end">
+            <Button size="sm" onClick={saveEdits} disabled={busy}>Save edits (creates version)</Button>
+          </div>
+        )}
       </Card>
 
       <Card className="mt-6 p-6">
         <h2 className="font-display text-lg font-bold">Your review</h2>
         <div className="mt-4 grid gap-4">
           <div>
-            <Label className="mb-1.5 block text-xs">Overall comments (optional)</Label>
-            <Textarea rows={3} value={comments} onChange={(e) => setComments(e.target.value)} placeholder="Constructive feedback for the appraisee…" disabled={isFinal} />
+            <Label className="mb-1.5 block text-xs">Overall comments / recommendations</Label>
+            <Textarea rows={3} value={comments} onChange={(e) => setComments(e.target.value)} placeholder="Constructive feedback…" disabled={isFinal} />
           </div>
           <div>
             <Label className="mb-1.5 block text-xs">If rejecting, briefly explain why</Label>
@@ -158,19 +176,52 @@ function ReviewAppraisal() {
               <X className="mr-1.5 h-4 w-4" /> Reject & return
             </Button>
             <Button onClick={() => decide("approved")} disabled={busy}>
-              <Check className="mr-1.5 h-4 w-4" /> Approve & sign
+              <Check className="mr-1.5 h-4 w-4" /> Approve & lock
             </Button>
           </div>
         ) : (
           <div className="mt-6 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm">
             <FileSignature className="h-4 w-4 text-primary" />
             <span>
-              You {a.status} this appraisal{a.supervisor_reviewed_at ? ` on ${new Date(a.supervisor_reviewed_at).toLocaleString()}` : ""}.
+              You {a.status} this appraisal{a.supervisor_reviewed_at ? ` on ${new Date(a.supervisor_reviewed_at).toLocaleString()}` : ""}. Appraisal is now locked.
             </span>
           </div>
         )}
       </Card>
     </Shell>
+  );
+}
+
+function SlaBanner({ deadline, escalatedAt, escalatedTo, status }: { deadline: string | null; escalatedAt: string | null; escalatedTo: string | null; status: string }) {
+  if (status === "approved" || status === "rejected") return null;
+  if (escalatedAt) {
+    return (
+      <div className="mt-4 rounded-lg border border-orange-300 bg-orange-50 p-3 text-sm text-orange-900">
+        <b>⚠ Escalated</b> on {new Date(escalatedAt).toLocaleString()} {escalatedTo ? "to Departmental Chief Officer" : "(no Chief Officer found in department)"}. The Chief Officer may now review.
+      </div>
+    );
+  }
+  if (!deadline) return null;
+  const ms = new Date(deadline).getTime() - Date.now();
+  const hours = Math.max(0, Math.floor(ms / 3_600_000));
+  const cls = hours < 12 ? "border-red-300 bg-red-50 text-red-900" : hours < 36 ? "border-amber-300 bg-amber-50 text-amber-900" : "border-emerald-300 bg-emerald-50 text-emerald-900";
+  return (
+    <div className={`mt-4 rounded-lg border p-3 text-sm ${cls}`}>
+      ⏱ <b>SLA:</b> {hours} hours remaining to action this appraisal before it auto-escalates to the Departmental Chief Officer.
+    </div>
+  );
+}
+
+function EditableDetail({ label, value, editing, onChange }: { label: string; value: string | null; editing: boolean; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
+      {editing ? (
+        <input defaultValue={value ?? ""} className="mt-0.5 w-full rounded border border-border px-2 py-1 text-sm" onChange={(e) => onChange(e.target.value)} />
+      ) : (
+        <div className="mt-0.5 text-sm">{value || <span className="text-muted-foreground">—</span>}</div>
+      )}
+    </div>
   );
 }
 
