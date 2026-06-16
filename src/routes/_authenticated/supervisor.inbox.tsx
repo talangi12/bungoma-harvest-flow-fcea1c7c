@@ -18,24 +18,32 @@ function SupervisorInbox() {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["supervisor-inbox", user.id],
-    enabled: hasAnyRole(roles, ["supervisor"]),
+    enabled: hasAnyRole(roles, ["supervisor","chief_officer"]),
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Trigger on-read escalation pass
+      await supabase.rpc("escalate_overdue_appraisals");
+      const ownQ = supabase
         .from("appraisals")
-        .select("id, period, status, total_score, rating, employee_id, created_at, employee_signed_at, supervisor_reviewed_at")
+        .select("id, period, status, total_score, rating, employee_id, created_at, employee_signed_at, supervisor_reviewed_at, supervisor_deadline, escalated_at, escalated_to")
         .eq("chosen_supervisor_id", user.id)
         .order("created_at", { ascending: false });
-      if (error) throw error;
-      const ids = Array.from(new Set((data ?? []).map((a) => a.employee_id)));
+      const escQ = supabase
+        .from("appraisals")
+        .select("id, period, status, total_score, rating, employee_id, created_at, employee_signed_at, supervisor_reviewed_at, supervisor_deadline, escalated_at, escalated_to")
+        .eq("escalated_to", user.id)
+        .order("escalated_at", { ascending: false });
+      const [{ data: own }, { data: esc }] = await Promise.all([ownQ, escQ]);
+      const merged = [...(own ?? []), ...(esc ?? []).filter((e) => !(own ?? []).some((o) => o.id === e.id))];
+      const ids = Array.from(new Set(merged.map((a) => a.employee_id)));
       const profiles = ids.length
         ? (await supabase.from("profiles").select("id, full_name, designation, department").in("id", ids)).data ?? []
         : [];
       const pmap = new Map(profiles.map((p) => [p.id, p]));
-      return (data ?? []).map((a) => ({ ...a, profile: pmap.get(a.employee_id) }));
+      return merged.map((a) => ({ ...a, profile: pmap.get(a.employee_id) }));
     },
   });
 
-  if (!rolesLoading && !hasAnyRole(roles, ["supervisor"])) {
+  if (!rolesLoading && !hasAnyRole(roles, ["supervisor","chief_officer"])) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader authenticated userId={user.id} />

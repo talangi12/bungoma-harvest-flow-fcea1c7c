@@ -29,11 +29,13 @@ import { Route as AuthenticatedSupervisorInboxRouteImport } from './routes/_auth
 import { Route as AuthenticatedCommitteeAppealsRouteImport } from './routes/_authenticated/committee.appeals'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminSyncRouteImport } from './routes/_authenticated/admin.sync'
+import { Route as AuthenticatedAdminStatusRouteImport } from './routes/_authenticated/admin.status'
 import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authenticated/admin.roles'
 import { Route as AuthenticatedAdminOrgStructureRouteImport } from './routes/_authenticated/admin.org-structure'
 import { Route as AuthenticatedAdminLoginAuditRouteImport } from './routes/_authenticated/admin.login-audit'
 import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin.import'
 import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
+import { Route as AuthenticatedAdminContractsRouteImport } from './routes/_authenticated/admin.contracts'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedSupervisorReviewIdRouteImport } from './routes/_authenticated/supervisor.review.$id'
 
@@ -140,6 +142,12 @@ const AuthenticatedAdminSyncRoute = AuthenticatedAdminSyncRouteImport.update({
   path: '/admin/sync',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminStatusRoute =
+  AuthenticatedAdminStatusRouteImport.update({
+    id: '/admin/status',
+    path: '/admin/status',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRolesRoute = AuthenticatedAdminRolesRouteImport.update({
   id: '/admin/roles',
   path: '/admin/roles',
@@ -169,6 +177,12 @@ const AuthenticatedAdminCyclesRoute =
     path: '/admin/cycles',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminContractsRoute =
+  AuthenticatedAdminContractsRouteImport.update({
+    id: '/admin/contracts',
+    path: '/admin/contracts',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
@@ -195,11 +209,13 @@ export interface FileRoutesByFullPath {
   '/quarterly': typeof AuthenticatedQuarterlyRoute
   '/search': typeof AuthenticatedSearchRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/admin/status': typeof AuthenticatedAdminStatusRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -223,11 +239,13 @@ export interface FileRoutesByTo {
   '/quarterly': typeof AuthenticatedQuarterlyRoute
   '/search': typeof AuthenticatedSearchRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/admin/status': typeof AuthenticatedAdminStatusRoute
   '/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -253,11 +271,13 @@ export interface FileRoutesById {
   '/_authenticated/quarterly': typeof AuthenticatedQuarterlyRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
   '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/_authenticated/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
   '/_authenticated/admin/roles': typeof AuthenticatedAdminRolesRoute
+  '/_authenticated/admin/status': typeof AuthenticatedAdminStatusRoute
   '/_authenticated/admin/sync': typeof AuthenticatedAdminSyncRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/committee/appeals': typeof AuthenticatedCommitteeAppealsRoute
@@ -283,11 +303,13 @@ export interface FileRouteTypes {
     | '/quarterly'
     | '/search'
     | '/admin/audit'
+    | '/admin/contracts'
     | '/admin/cycles'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
     | '/admin/roles'
+    | '/admin/status'
     | '/admin/sync'
     | '/admin/users'
     | '/committee/appeals'
@@ -311,11 +333,13 @@ export interface FileRouteTypes {
     | '/quarterly'
     | '/search'
     | '/admin/audit'
+    | '/admin/contracts'
     | '/admin/cycles'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
     | '/admin/roles'
+    | '/admin/status'
     | '/admin/sync'
     | '/admin/users'
     | '/committee/appeals'
@@ -340,11 +364,13 @@ export interface FileRouteTypes {
     | '/_authenticated/quarterly'
     | '/_authenticated/search'
     | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/contracts'
     | '/_authenticated/admin/cycles'
     | '/_authenticated/admin/import'
     | '/_authenticated/admin/login-audit'
     | '/_authenticated/admin/org-structure'
     | '/_authenticated/admin/roles'
+    | '/_authenticated/admin/status'
     | '/_authenticated/admin/sync'
     | '/_authenticated/admin/users'
     | '/_authenticated/committee/appeals'
@@ -506,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSyncRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/status': {
+      id: '/_authenticated/admin/status'
+      path: '/admin/status'
+      fullPath: '/admin/status'
+      preLoaderRoute: typeof AuthenticatedAdminStatusRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/roles': {
       id: '/_authenticated/admin/roles'
       path: '/admin/roles'
@@ -541,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCyclesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/contracts': {
+      id: '/_authenticated/admin/contracts'
+      path: '/admin/contracts'
+      fullPath: '/admin/contracts'
+      preLoaderRoute: typeof AuthenticatedAdminContractsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/audit': {
       id: '/_authenticated/admin/audit'
       path: '/admin/audit'
@@ -569,11 +609,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedQuarterlyRoute: typeof AuthenticatedQuarterlyRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminContractsRoute: typeof AuthenticatedAdminContractsRoute
   AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
   AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminLoginAuditRoute: typeof AuthenticatedAdminLoginAuditRoute
   AuthenticatedAdminOrgStructureRoute: typeof AuthenticatedAdminOrgStructureRoute
   AuthenticatedAdminRolesRoute: typeof AuthenticatedAdminRolesRoute
+  AuthenticatedAdminStatusRoute: typeof AuthenticatedAdminStatusRoute
   AuthenticatedAdminSyncRoute: typeof AuthenticatedAdminSyncRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedCommitteeAppealsRoute: typeof AuthenticatedCommitteeAppealsRoute
@@ -593,11 +635,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedQuarterlyRoute: AuthenticatedQuarterlyRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminContractsRoute: AuthenticatedAdminContractsRoute,
   AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
   AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminLoginAuditRoute: AuthenticatedAdminLoginAuditRoute,
   AuthenticatedAdminOrgStructureRoute: AuthenticatedAdminOrgStructureRoute,
   AuthenticatedAdminRolesRoute: AuthenticatedAdminRolesRoute,
+  AuthenticatedAdminStatusRoute: AuthenticatedAdminStatusRoute,
   AuthenticatedAdminSyncRoute: AuthenticatedAdminSyncRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedCommitteeAppealsRoute: AuthenticatedCommitteeAppealsRoute,
@@ -620,13 +664,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

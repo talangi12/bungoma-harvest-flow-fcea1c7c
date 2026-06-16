@@ -139,6 +139,36 @@ export type Database = {
         }
         Relationships: []
       }
+      appraisal_versions: {
+        Row: {
+          appraisal_id: string
+          change_summary: string | null
+          changed_by: string | null
+          created_at: string
+          id: string
+          snapshot: Json
+          version_no: number
+        }
+        Insert: {
+          appraisal_id: string
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          snapshot: Json
+          version_no: number
+        }
+        Update: {
+          appraisal_id?: string
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          snapshot?: Json
+          version_no?: number
+        }
+        Relationships: []
+      }
       appraisals: {
         Row: {
           chosen_supervisor_id: string | null
@@ -149,8 +179,12 @@ export type Database = {
           employee_signed_at: string | null
           endyear_completed_at: string | null
           endyear_unlocked_at: string | null
+          escalated_at: string | null
+          escalated_to: string | null
+          escalation_count: number
           fy_start: string | null
           id: string
+          locked_at: string | null
           midyear_completed_at: string | null
           midyear_unlocked_at: string | null
           pdf_generated_at: string | null
@@ -163,6 +197,7 @@ export type Database = {
           self_overall_comment: string | null
           status: string
           supervisor_comments: string | null
+          supervisor_deadline: string | null
           supervisor_reviewed_at: string | null
           supervisor_signed_at: string | null
           total_score: number | null
@@ -177,8 +212,12 @@ export type Database = {
           employee_signed_at?: string | null
           endyear_completed_at?: string | null
           endyear_unlocked_at?: string | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          escalation_count?: number
           fy_start?: string | null
           id?: string
+          locked_at?: string | null
           midyear_completed_at?: string | null
           midyear_unlocked_at?: string | null
           pdf_generated_at?: string | null
@@ -191,6 +230,7 @@ export type Database = {
           self_overall_comment?: string | null
           status?: string
           supervisor_comments?: string | null
+          supervisor_deadline?: string | null
           supervisor_reviewed_at?: string | null
           supervisor_signed_at?: string | null
           total_score?: number | null
@@ -205,8 +245,12 @@ export type Database = {
           employee_signed_at?: string | null
           endyear_completed_at?: string | null
           endyear_unlocked_at?: string | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          escalation_count?: number
           fy_start?: string | null
           id?: string
+          locked_at?: string | null
           midyear_completed_at?: string | null
           midyear_unlocked_at?: string | null
           pdf_generated_at?: string | null
@@ -219,6 +263,7 @@ export type Database = {
           self_overall_comment?: string | null
           status?: string
           supervisor_comments?: string | null
+          supervisor_deadline?: string | null
           supervisor_reviewed_at?: string | null
           supervisor_signed_at?: string | null
           total_score?: number | null
@@ -341,6 +386,40 @@ export type Database = {
         }
         Relationships: []
       }
+      employee_status_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          employee_id: string
+          id: string
+          new_status: Database["public"]["Enums"]["employee_status"]
+          previous_status: Database["public"]["Enums"]["employee_status"] | null
+          reason: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          employee_id: string
+          id?: string
+          new_status: Database["public"]["Enums"]["employee_status"]
+          previous_status?:
+            | Database["public"]["Enums"]["employee_status"]
+            | null
+          reason?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          employee_id?: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["employee_status"]
+          previous_status?:
+            | Database["public"]["Enums"]["employee_status"]
+            | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
       login_events: {
         Row: {
           created_at: string
@@ -446,9 +525,56 @@ export type Database = {
         }
         Relationships: []
       }
+      otp_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          id_number: string
+          ip: string | null
+          max_attempts: number
+          phone_number: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          id_number: string
+          ip?: string | null
+          max_attempts?: number
+          phone_number: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          id_number?: string
+          ip?: string | null
+          max_attempts?: number
+          phone_number?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           chief_officer_id: string | null
+          contract_end_date: string | null
+          contract_start_date: string | null
           created_at: string
           department: string | null
           designation: string | null
@@ -458,6 +584,7 @@ export type Database = {
           division: string | null
           email: string | null
           employee_no: string | null
+          employee_status: Database["public"]["Enums"]["employee_status"]
           employment_date: string | null
           employment_status: string | null
           employment_type: string | null
@@ -472,8 +599,12 @@ export type Database = {
           national_id: string | null
           personal_number: string | null
           phone: string | null
+          phone_number: string | null
           photo_url: string | null
           section: string | null
+          status_change_reason: string | null
+          status_changed_at: string | null
+          status_changed_by: string | null
           supervisor_id: string | null
           unit: string | null
           updated_at: string
@@ -481,6 +612,8 @@ export type Database = {
         }
         Insert: {
           chief_officer_id?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
           created_at?: string
           department?: string | null
           designation?: string | null
@@ -490,6 +623,7 @@ export type Database = {
           division?: string | null
           email?: string | null
           employee_no?: string | null
+          employee_status?: Database["public"]["Enums"]["employee_status"]
           employment_date?: string | null
           employment_status?: string | null
           employment_type?: string | null
@@ -504,8 +638,12 @@ export type Database = {
           national_id?: string | null
           personal_number?: string | null
           phone?: string | null
+          phone_number?: string | null
           photo_url?: string | null
           section?: string | null
+          status_change_reason?: string | null
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           supervisor_id?: string | null
           unit?: string | null
           updated_at?: string
@@ -513,6 +651,8 @@ export type Database = {
         }
         Update: {
           chief_officer_id?: string | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
           created_at?: string
           department?: string | null
           designation?: string | null
@@ -522,6 +662,7 @@ export type Database = {
           division?: string | null
           email?: string | null
           employee_no?: string | null
+          employee_status?: Database["public"]["Enums"]["employee_status"]
           employment_date?: string | null
           employment_status?: string | null
           employment_type?: string | null
@@ -536,8 +677,12 @@ export type Database = {
           national_id?: string | null
           personal_number?: string | null
           phone?: string | null
+          phone_number?: string | null
           photo_url?: string | null
           section?: string | null
+          status_change_reason?: string | null
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           supervisor_id?: string | null
           unit?: string | null
           updated_at?: string
@@ -802,6 +947,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_expired_contracts: { Args: never; Returns: number }
       can_import: {
         Args: {
           _actor: string
@@ -819,10 +965,28 @@ export type Database = {
         Args: { _actor: string; _target: string }
         Returns: boolean
       }
+      change_employee_status: {
+        Args: {
+          _employee: string
+          _new: Database["public"]["Enums"]["employee_status"]
+          _reason: string
+        }
+        Returns: undefined
+      }
       classify_rating: { Args: { pct: number }; Returns: string }
+      contract_action: {
+        Args: {
+          _action: string
+          _employee: string
+          _new_end: string
+          _reason: string
+        }
+        Returns: undefined
+      }
       current_quarter: { Args: { _fy_start: string }; Returns: number }
       cycle_active_for_dept: { Args: { _dept: string }; Returns: boolean }
       endyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
+      escalate_overdue_appraisals: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -882,6 +1046,15 @@ export type Database = {
         | "governor"
         | "director"
         | "cec"
+      employee_status:
+        | "active"
+        | "archived"
+        | "on_leave"
+        | "suspended"
+        | "transferred"
+        | "retired"
+        | "terminated"
+      employment_type: "permanent" | "pensionable" | "contract" | "casual"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1027,6 +1200,16 @@ export const Constants = {
         "director",
         "cec",
       ],
+      employee_status: [
+        "active",
+        "archived",
+        "on_leave",
+        "suspended",
+        "transferred",
+        "retired",
+        "terminated",
+      ],
+      employment_type: ["permanent", "pensionable", "contract", "casual"],
     },
   },
 } as const
