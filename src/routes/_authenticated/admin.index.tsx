@@ -73,6 +73,10 @@ function AdminHome() {
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AdminCard to="/admin/import" icon={UploadCloud} title="Bulk employee import"
             desc="Drag-drop CSV or Excel. Pre-import preview, validation report and direct insertion into the database." />
+          <AdminCard to="/admin/status" icon={Activity} title="Employee status management"
+            desc="Change lifecycle status (Active, Suspended, Transferred, Retired, Terminated) with full audit." />
+          <AdminCard to="/admin/contracts" icon={FileWarning} title="Contract lifecycle"
+            desc="Monitor contract employees, auto-archive expired contracts, renew, extend or terminate." />
           <AdminCard to="/admin/sync" icon={Database} title="Payroll synchronization"
             desc="Schedule daily/weekly sync, run on-demand syncs, and inspect the run history." />
           <AdminCard to="/admin/org-structure" icon={Building2} title="Organisational structure"
