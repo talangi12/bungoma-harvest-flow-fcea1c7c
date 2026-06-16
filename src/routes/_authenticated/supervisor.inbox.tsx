@@ -43,7 +43,7 @@ function SupervisorInbox() {
     },
   });
 
-  if (!rolesLoading && !hasAnyRole(roles, ["supervisor"])) {
+  if (!rolesLoading && !hasAnyRole(roles, ["supervisor","chief_officer"])) {
     return (
       <div className="min-h-screen bg-background">
         <AppHeader authenticated userId={user.id} />
