@@ -24,6 +24,37 @@ function ReviewAppraisal() {
   const [reason, setReason] = useState("");
   const [comments, setComments] = useState("");
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [edits, setEdits] = useState<Record<string, Record<string, unknown>>>({});
+
+  function updateField(targetId: string, field: string, value: unknown) {
+    setEdits((e) => ({ ...e, [targetId]: { ...(e[targetId] ?? {}), [field]: value } }));
+  }
+
+  async function saveEdits() {
+    const keys = Object.keys(edits);
+    if (keys.length === 0) { setEditing(false); return; }
+    setBusy(true);
+    try {
+      // Snapshot current appraisal+targets
+      const snap = { appraisal: data?.appraisal, targets: data?.appraisal?.targets };
+      const { count } = await supabase.from("appraisal_versions").select("id", { count: "exact", head: true }).eq("appraisal_id", id);
+      await supabase.from("appraisal_versions").insert({
+        appraisal_id: id, version_no: (count ?? 0) + 1,
+        snapshot: snap as never, changed_by: user.id,
+        change_summary: `Supervisor edited ${keys.length} target(s)`,
+      });
+      for (const tid of keys) {
+        const patch = edits[tid];
+        const { error } = await supabase.from("targets").update(patch).eq("id", tid);
+        if (error) throw error;
+      }
+      toast.success("Saved with version snapshot");
+      setEdits({}); setEditing(false);
+      qc.invalidateQueries({ queryKey: ["review", id] });
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Save failed"); }
+    finally { setBusy(false); }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["review", id],
