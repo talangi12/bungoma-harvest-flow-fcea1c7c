@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
 import { ArrowLeft, Check, X, FileSignature } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { sendEventEmail } from "@/lib/notify.functions";
 
 export const Route = createFileRoute("/_authenticated/supervisor/review/$id")({
   head: () => ({ meta: [{ title: "Review Appraisal — Bungoma EPMS" }] }),
