@@ -79,6 +79,8 @@ function AdminHome() {
             desc="Monitor contract employees, auto-archive expired contracts, renew, extend or terminate." />
           <AdminCard to="/admin/sync" icon={Database} title="Payroll synchronization"
             desc="Schedule daily/weekly sync, run on-demand syncs, and inspect the run history." />
+          <AdminCard to="/admin/escalations" icon={AlertTriangle} title="Escalations dashboard"
+            desc="72-hour SLA countdowns, overdue counts, departmental trends and PDF export." />
           <AdminCard to="/admin/org-structure" icon={Building2} title="Organisational structure"
             desc="Auto-generated hierarchy of directorates → departments → sections → units." />
           <AdminCard to="/search" icon={SearchIcon} title="Employee search"

@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminOrgStructureRouteImport } from './routes/_authenticated/admin.org-structure'
 import { Route as AuthenticatedAdminLoginAuditRouteImport } from './routes/_authenticated/admin.login-audit'
 import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin.import'
+import { Route as AuthenticatedAdminEscalationsRouteImport } from './routes/_authenticated/admin.escalations'
 import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
 import { Route as AuthenticatedAdminContractsRouteImport } from './routes/_authenticated/admin.contracts'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -172,6 +173,12 @@ const AuthenticatedAdminImportRoute =
     path: '/admin/import',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminEscalationsRoute =
+  AuthenticatedAdminEscalationsRouteImport.update({
+    id: '/admin/escalations',
+    path: '/admin/escalations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCyclesRoute =
   AuthenticatedAdminCyclesRouteImport.update({
     id: '/admin/cycles',
@@ -218,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -249,6 +257,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -282,6 +291,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/_authenticated/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/_authenticated/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/contracts'
     | '/admin/cycles'
+    | '/admin/escalations'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/contracts'
     | '/admin/cycles'
+    | '/admin/escalations'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
@@ -378,6 +390,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/contracts'
     | '/_authenticated/admin/cycles'
+    | '/_authenticated/admin/escalations'
     | '/_authenticated/admin/import'
     | '/_authenticated/admin/login-audit'
     | '/_authenticated/admin/org-structure'
@@ -581,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/escalations': {
+      id: '/_authenticated/admin/escalations'
+      path: '/admin/escalations'
+      fullPath: '/admin/escalations'
+      preLoaderRoute: typeof AuthenticatedAdminEscalationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/cycles': {
       id: '/_authenticated/admin/cycles'
       path: '/admin/cycles'
@@ -632,6 +652,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminContractsRoute: typeof AuthenticatedAdminContractsRoute
   AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
+  AuthenticatedAdminEscalationsRoute: typeof AuthenticatedAdminEscalationsRoute
   AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminLoginAuditRoute: typeof AuthenticatedAdminLoginAuditRoute
   AuthenticatedAdminOrgStructureRoute: typeof AuthenticatedAdminOrgStructureRoute
@@ -658,6 +679,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminContractsRoute: AuthenticatedAdminContractsRoute,
   AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
+  AuthenticatedAdminEscalationsRoute: AuthenticatedAdminEscalationsRoute,
   AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminLoginAuditRoute: AuthenticatedAdminLoginAuditRoute,
   AuthenticatedAdminOrgStructureRoute: AuthenticatedAdminOrgStructureRoute,
