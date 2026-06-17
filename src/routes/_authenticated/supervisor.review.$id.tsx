@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { RatingBadge, classify } from "@/components/RatingBadge";
 import { toast } from "sonner";
 import { ArrowLeft, Check, X, FileSignature } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { sendEventEmail } from "@/lib/notify.functions";
 
 export const Route = createFileRoute("/_authenticated/supervisor/review/$id")({
   head: () => ({ meta: [{ title: "Review Appraisal — Bungoma EPMS" }] }),
@@ -21,6 +23,7 @@ function ReviewAppraisal() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const sendNotifyFn = useServerFn(sendEventEmail);
   const [reason, setReason] = useState("");
   const [comments, setComments] = useState("");
   const [busy, setBusy] = useState(false);
@@ -106,6 +109,15 @@ function ReviewAppraisal() {
         })
         .eq("id", id);
       if (error) throw error;
+      // Fire-and-forget email; failure is silently audit-logged in notification_log
+      try {
+        await sendNotifyFn({ data: {
+          event_type: action === "approved" ? "appraisal_approved" : "appraisal_rejected",
+          to_user_id: a.employee_id,
+          related_appraisal_id: id,
+          vars: { period: a.period ?? "", reason: reason.trim() },
+        }});
+      } catch { /* logged server-side */ }
       toast.success(action === "approved" ? "Appraisal approved" : "Appraisal returned for revision");
       qc.invalidateQueries({ queryKey: ["review", id] });
       qc.invalidateQueries({ queryKey: ["supervisor-inbox", user.id] });

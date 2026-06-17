@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRoles, hasAnyRole } from "@/hooks/useRoles";
-import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon, Database, Building2, Activity, FileWarning } from "lucide-react";
+import { ShieldCheck, UserCog, UserPlus, Users, Gavel, FileText, ClipboardCheck, BarChart3, CalendarDays, ScrollText, UploadCloud, Search as SearchIcon, Database, Building2, Activity, FileWarning, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin Console — Bungoma EPMS" }] }),
@@ -79,6 +79,8 @@ function AdminHome() {
             desc="Monitor contract employees, auto-archive expired contracts, renew, extend or terminate." />
           <AdminCard to="/admin/sync" icon={Database} title="Payroll synchronization"
             desc="Schedule daily/weekly sync, run on-demand syncs, and inspect the run history." />
+          <AdminCard to="/admin/escalations" icon={AlertTriangle} title="Escalations dashboard"
+            desc="72-hour SLA countdowns, overdue counts, departmental trends and PDF export." />
           <AdminCard to="/admin/org-structure" icon={Building2} title="Organisational structure"
             desc="Auto-generated hierarchy of directorates → departments → sections → units." />
           <AdminCard to="/search" icon={SearchIcon} title="Employee search"

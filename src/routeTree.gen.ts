@@ -34,9 +34,11 @@ import { Route as AuthenticatedAdminRolesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminOrgStructureRouteImport } from './routes/_authenticated/admin.org-structure'
 import { Route as AuthenticatedAdminLoginAuditRouteImport } from './routes/_authenticated/admin.login-audit'
 import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin.import'
+import { Route as AuthenticatedAdminEscalationsRouteImport } from './routes/_authenticated/admin.escalations'
 import { Route as AuthenticatedAdminCyclesRouteImport } from './routes/_authenticated/admin.cycles'
 import { Route as AuthenticatedAdminContractsRouteImport } from './routes/_authenticated/admin.contracts'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
+import { Route as ApiPublicHooksContractMonitorRouteImport } from './routes/api/public/hooks/contract-monitor'
 import { Route as AuthenticatedSupervisorReviewIdRouteImport } from './routes/_authenticated/supervisor.review.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -171,6 +173,12 @@ const AuthenticatedAdminImportRoute =
     path: '/admin/import',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminEscalationsRoute =
+  AuthenticatedAdminEscalationsRouteImport.update({
+    id: '/admin/escalations',
+    path: '/admin/escalations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCyclesRoute =
   AuthenticatedAdminCyclesRouteImport.update({
     id: '/admin/cycles',
@@ -188,6 +196,12 @@ const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
   path: '/admin/audit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksContractMonitorRoute =
+  ApiPublicHooksContractMonitorRouteImport.update({
+    id: '/api/public/hooks/contract-monitor',
+    path: '/api/public/hooks/contract-monitor',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedSupervisorReviewIdRoute =
   AuthenticatedSupervisorReviewIdRouteImport.update({
     id: '/supervisor/review/$id',
@@ -211,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -224,6 +239,7 @@ export interface FileRoutesByFullPath {
   '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
+  '/api/public/hooks/contract-monitor': typeof ApiPublicHooksContractMonitorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -241,6 +257,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -254,6 +271,7 @@ export interface FileRoutesByTo {
   '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
+  '/api/public/hooks/contract-monitor': typeof ApiPublicHooksContractMonitorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -273,6 +291,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/contracts': typeof AuthenticatedAdminContractsRoute
   '/_authenticated/admin/cycles': typeof AuthenticatedAdminCyclesRoute
+  '/_authenticated/admin/escalations': typeof AuthenticatedAdminEscalationsRoute
   '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/login-audit': typeof AuthenticatedAdminLoginAuditRoute
   '/_authenticated/admin/org-structure': typeof AuthenticatedAdminOrgStructureRoute
@@ -286,6 +305,7 @@ export interface FileRoutesById {
   '/api/public/payroll-sync': typeof ApiPublicPayrollSyncRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/supervisor/review/$id': typeof AuthenticatedSupervisorReviewIdRoute
+  '/api/public/hooks/contract-monitor': typeof ApiPublicHooksContractMonitorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -305,6 +325,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/contracts'
     | '/admin/cycles'
+    | '/admin/escalations'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
@@ -318,6 +339,7 @@ export interface FileRouteTypes {
     | '/api/public/payroll-sync'
     | '/admin/'
     | '/supervisor/review/$id'
+    | '/api/public/hooks/contract-monitor'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -335,6 +357,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/contracts'
     | '/admin/cycles'
+    | '/admin/escalations'
     | '/admin/import'
     | '/admin/login-audit'
     | '/admin/org-structure'
@@ -348,6 +371,7 @@ export interface FileRouteTypes {
     | '/api/public/payroll-sync'
     | '/admin'
     | '/supervisor/review/$id'
+    | '/api/public/hooks/contract-monitor'
   id:
     | '__root__'
     | '/'
@@ -366,6 +390,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/contracts'
     | '/_authenticated/admin/cycles'
+    | '/_authenticated/admin/escalations'
     | '/_authenticated/admin/import'
     | '/_authenticated/admin/login-audit'
     | '/_authenticated/admin/org-structure'
@@ -379,6 +404,7 @@ export interface FileRouteTypes {
     | '/api/public/payroll-sync'
     | '/_authenticated/admin/'
     | '/_authenticated/supervisor/review/$id'
+    | '/api/public/hooks/contract-monitor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -388,6 +414,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiPublicBootstrapSuper26Route: typeof ApiPublicBootstrapSuper26Route
   ApiPublicPayrollSyncRoute: typeof ApiPublicPayrollSyncRoute
+  ApiPublicHooksContractMonitorRoute: typeof ApiPublicHooksContractMonitorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -567,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/escalations': {
+      id: '/_authenticated/admin/escalations'
+      path: '/admin/escalations'
+      fullPath: '/admin/escalations'
+      preLoaderRoute: typeof AuthenticatedAdminEscalationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/cycles': {
       id: '/_authenticated/admin/cycles'
       path: '/admin/cycles'
@@ -587,6 +621,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/hooks/contract-monitor': {
+      id: '/api/public/hooks/contract-monitor'
+      path: '/api/public/hooks/contract-monitor'
+      fullPath: '/api/public/hooks/contract-monitor'
+      preLoaderRoute: typeof ApiPublicHooksContractMonitorRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/supervisor/review/$id': {
       id: '/_authenticated/supervisor/review/$id'
@@ -611,6 +652,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminContractsRoute: typeof AuthenticatedAdminContractsRoute
   AuthenticatedAdminCyclesRoute: typeof AuthenticatedAdminCyclesRoute
+  AuthenticatedAdminEscalationsRoute: typeof AuthenticatedAdminEscalationsRoute
   AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminLoginAuditRoute: typeof AuthenticatedAdminLoginAuditRoute
   AuthenticatedAdminOrgStructureRoute: typeof AuthenticatedAdminOrgStructureRoute
@@ -637,6 +679,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminContractsRoute: AuthenticatedAdminContractsRoute,
   AuthenticatedAdminCyclesRoute: AuthenticatedAdminCyclesRoute,
+  AuthenticatedAdminEscalationsRoute: AuthenticatedAdminEscalationsRoute,
   AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
   AuthenticatedAdminLoginAuditRoute: AuthenticatedAdminLoginAuditRoute,
   AuthenticatedAdminOrgStructureRoute: AuthenticatedAdminOrgStructureRoute,
@@ -660,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiPublicBootstrapSuper26Route: ApiPublicBootstrapSuper26Route,
   ApiPublicPayrollSyncRoute: ApiPublicPayrollSyncRoute,
+  ApiPublicHooksContractMonitorRoute: ApiPublicHooksContractMonitorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

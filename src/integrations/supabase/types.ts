@@ -456,6 +456,60 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          body: string | null
+          channel: string
+          created_at: string
+          error: string | null
+          event_type: string
+          id: string
+          provider: string | null
+          provider_response: string | null
+          recipient: string
+          recipient_user_id: string | null
+          related_appraisal_id: string | null
+          related_employee_id: string | null
+          sent_at: string | null
+          status: string
+          subject: string | null
+        }
+        Insert: {
+          body?: string | null
+          channel: string
+          created_at?: string
+          error?: string | null
+          event_type: string
+          id?: string
+          provider?: string | null
+          provider_response?: string | null
+          recipient: string
+          recipient_user_id?: string | null
+          related_appraisal_id?: string | null
+          related_employee_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          error?: string | null
+          event_type?: string
+          id?: string
+          provider?: string | null
+          provider_response?: string | null
+          recipient?: string
+          recipient_user_id?: string | null
+          related_appraisal_id?: string | null
+          related_employee_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1023,6 +1077,7 @@ export type Database = {
         Returns: undefined
       }
       midyear_unlocked: { Args: { _appraisal_id: string }; Returns: boolean }
+      monitor_contracts: { Args: never; Returns: Json }
       user_role_dept: {
         Args: { _role: Database["public"]["Enums"]["app_role"]; _uid: string }
         Returns: string
