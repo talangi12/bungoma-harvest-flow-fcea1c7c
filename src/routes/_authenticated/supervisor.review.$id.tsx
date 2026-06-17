@@ -23,6 +23,7 @@ function ReviewAppraisal() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const sendNotifyFn = useServerFn(sendEventEmail);
   const [reason, setReason] = useState("");
   const [comments, setComments] = useState("");
   const [busy, setBusy] = useState(false);
