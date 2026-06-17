@@ -108,6 +108,15 @@ function ReviewAppraisal() {
         })
         .eq("id", id);
       if (error) throw error;
+      // Fire-and-forget email; failure is silently audit-logged in notification_log
+      try {
+        await sendNotifyFn({ data: {
+          event_type: action === "approved" ? "appraisal_approved" : "appraisal_rejected",
+          to_user_id: a.employee_id,
+          related_appraisal_id: id,
+          vars: { period: a.period ?? "", reason: reason.trim() },
+        }});
+      } catch { /* logged server-side */ }
       toast.success(action === "approved" ? "Appraisal approved" : "Appraisal returned for revision");
       qc.invalidateQueries({ queryKey: ["review", id] });
       qc.invalidateQueries({ queryKey: ["supervisor-inbox", user.id] });
